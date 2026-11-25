@@ -1,0 +1,6 @@
+Sjónabókarstafróf uses separate licenses for code and project-created font materials:
+
+- **Code and scripts:** MIT License. See [LICENSE-MIT](LICENSE-MIT).
+- **Project-created font files, TXT transcriptions, and documentation:** Creative Commons Attribution 4.0 International (CC BY 4.0), to the extent the project contributors hold rights to license those materials. The license text is available at https://creativecommons.org/licenses/by/4.0/legalcode.
+
+These licenses do not cover the historical manuscript, third-party scans or digitizations, or any other material for which project contributors do not hold the relevant rights. No EPS files or manuscript scans are included in this repository. The README explains the project scope and attribution practice.

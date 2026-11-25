@@ -1,0 +1,25 @@
+---
+title: "Source groups and frame motifs"
+subtitle: "Corpus-linked visual frames and within-group comparisons"
+page-layout: full
+toc: false
+include-after-body:
+  - text: <script type="module" src="js/font-families.js"></script>
+---
+
+[← Sjónabókarstafróf catalog](index.qmd) · [Test the fonts](font-test.qmd)
+
+The groups below come from shared source-ID prefixes in the chart data. They organize the font pages; they do not assert that the charts are historical typeface families. A YAML file selects one small border or motif from the digitized pattern corpus for each group. The motif is drawn as a decorative frame around the TXT chart sheet; the glyph matrices and TTF outlines are unchanged.
+
+The 2007–45 source group has no border or edging chart in the current pattern index. Its frame uses a rosette chart from that same group at the corners, with plain rules between them. That frame is a new display treatment, not a border documented in the source.
+
+<p id="font-groups-status" class="font-status" role="status" aria-live="polite">Loading source groups…</p>
+<section id="font-family-grid" class="font-family-grid" aria-label="Source ID groups and border motifs"></section>
+
+::: {.font-source-note}
+## Similarity across source groups
+
+The within-group scores summarize binary silhouette overlap between pages with at least three shared labels. They are exploratory descriptive statistics, not validated typeface-family classifications. The downloadable [metrics data](fonts/similarity-metrics.json) contains the method, limitations, per-group summaries, and page-pair scores.
+
+<div id="font-similarity-summary"></div>
+:::

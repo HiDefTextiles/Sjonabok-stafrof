@@ -1,0 +1,35 @@
+version: 1
+description: "Border motifs are selected from the digitized Sjónabók pattern corpus for source-ID groups. These IDs group chart records; they do not assert historical font-family relationships."
+groups:
+  natmus453:
+    pattern_id: "natmus453_740_p2"
+    treatment: "repeat-border"
+    rationale: "Small repeat-border chart in this source group, selected for a light visual frame."
+  thjms1105:
+    pattern_id: "thjms1105_72_p3"
+    treatment: "repeat-border"
+    rationale: "Small repeat-border chart in this source group, selected for a light visual frame."
+  thjms1985-235:
+    pattern_id: "thjms1985-235_402_p5"
+    treatment: "repeat-border"
+    rationale: "Small repeat-border chart in this source group, selected for a light visual frame."
+  thjms1997-123:
+    pattern_id: "thjms1997-123_456_p1"
+    treatment: "repeat-border"
+    rationale: "Small repeat-border chart in this source group, selected for a light visual frame."
+  thjms2007-45:
+    pattern_id: "thjms2007-45_514"
+    treatment: "corner-motif"
+    rationale: "This source group has no border or edging chart in the current corpus index; use its smallest rosette only as a corner motif around a plain line. The resulting frame is a new display treatment, not an original chart border."
+  thjms2008-14:
+    pattern_id: "thjms2008-14_522_p3"
+    treatment: "repeat-border"
+    rationale: "Small repeat-border chart in this source group, selected for a light visual frame."
+  thjms5898:
+    pattern_id: "thjms5898_300_p1"
+    treatment: "repeat-border"
+    rationale: "Small repeat-border chart in this source group, selected for a light visual frame."
+  thjmsth_116:
+    pattern_id: "thjmsth_116_600_p5"
+    treatment: "repeat-border"
+    rationale: "Small repeat-border chart in this source group, selected for a light visual frame."

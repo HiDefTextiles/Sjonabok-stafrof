@@ -1,0 +1,21 @@
+---
+title: "Sjónabókarstafróf"
+subtitle: "Digitized chart motifs and source-inspired fonts"
+page-layout: full
+toc: false
+include-after-body:
+  - text: <script type="module" src="js/font-catalog.js"></script>
+---
+
+The font catalog keeps the source chart, its reusable TXT stitch motifs, and the generated TTF together. Open a chart page to download its TXT motifs and inspect how the source-chart and modern-alt fonts were assembled.
+
+::: {.font-navigation}
+[Explore source groups and border motifs](font-families.qmd) · [Try the fonts with your own text](font-test.qmd)
+:::
+
+<p id="font-catalog-status" class="font-status" role="status" aria-live="polite">Loading font chart pages…</p>
+<section id="font-catalog" class="font-catalog" aria-label="Sjónabók font chart catalog"></section>
+
+::: {.font-source-note}
+TXT matrices are plain 0/1 stitch grids and are the reusable motif files. TTF paths are verified against those grids. The TTF is vector geometry: its cell pattern is exact, while a word processor may rasterize or antialias it differently at different sizes. No EPS files are included.
+:::

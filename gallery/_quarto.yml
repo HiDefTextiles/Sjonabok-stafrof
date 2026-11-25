@@ -1,0 +1,112 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - index.qmd
+    - font-families.qmd
+    - font-test.qmd
+    - font-pages/natmus453_702.qmd
+    - font-pages/natmus453_704.qmd
+    - font-pages/natmus453_708.qmd
+    - font-pages/natmus453_712.qmd
+    - font-pages/natmus453_756.qmd
+    - font-pages/natmus453_758.qmd
+    - font-pages/natmus453_760.qmd
+    - font-pages/thjms1105_124.qmd
+    - font-pages/thjms1105_146.qmd
+    - font-pages/thjms1105_150.qmd
+    - font-pages/thjms1105_152.qmd
+    - font-pages/thjms1985-235_404.qmd
+    - font-pages/thjms1985-235_406.qmd
+    - font-pages/thjms1985-235_408.qmd
+    - font-pages/thjms1997-123_414.qmd
+    - font-pages/thjms1997-123_416.qmd
+    - font-pages/thjms1997-123_418.qmd
+    - font-pages/thjms1997-123_420.qmd
+    - font-pages/thjms1997-123_426.qmd
+    - font-pages/thjms1997-123_430.qmd
+    - font-pages/thjms1997-123_472.qmd
+    - font-pages/thjms2007-45_494.qmd
+    - font-pages/thjms2007-45_496.qmd
+    - font-pages/thjms2007-45_498.qmd
+    - font-pages/thjms2007-45_508.qmd
+    - font-pages/thjms2008-14_544.qmd
+    - font-pages/thjms2008-14_550.qmd
+    - font-pages/thjms2008-14_552.qmd
+    - font-pages/thjms2008-14_554.qmd
+    - font-pages/thjms2008-14_556.qmd
+    - font-pages/thjms2008-14_558.qmd
+    - font-pages/thjms2008-14_562.qmd
+    - font-pages/thjms2008-14_564.qmd
+    - font-pages/thjms2008-14_570.qmd
+    - font-pages/thjms5898_232.qmd
+    - font-pages/thjms5898_234.qmd
+    - font-pages/thjms5898_236.qmd
+    - font-pages/thjms5898_238.qmd
+    - font-pages/thjms5898_240.qmd
+    - font-pages/thjms5898_306.qmd
+    - font-pages/thjmsth_116_582.qmd
+    - font-pages/thjmsth_116_588.qmd
+    - font-pages/thjmsth_116_638.qmd
+    - font-pages/thjmsth_116_644.qmd
+    - font-pages/thjmsth_116_646.qmd
+    - font-pages/thjmsth_116_648.qmd
+    - font-pages/thjmsth_116_668.qmd
+    - font-pages/thjmsth_116_670.qmd
+    - font-pages/thjmsth_116_672.qmd
+  resources:
+    - fonts/**
+    - patterns/**
+    - js/**
+    - img/hi/**
+
+lang: en
+
+website:
+  title: "Sjónabókarstafróf"
+  description: "Explore digitized letter charts, TXT stitch motifs, and source-inspired fonts from Sjónabók."
+  site-url: https://hideftextiles.github.io/Sjonabok-stafrof/
+  repo-url: https://github.com/HiDefTextiles/Sjonabok-stafrof
+  repo-actions: [issue]
+  favicon: img/hi/favicon.svg
+  search: true
+  navbar:
+    logo: img/hi/hi_named_logo-en.svg
+    logo-alt: "University of Iceland"
+    background: primary
+    left:
+      - text: "Fonts"
+        href: index.qmd
+      - text: "Source groups and frames"
+        href: font-families.qmd
+      - text: "Test the fonts"
+        href: font-test.qmd
+    tools:
+      - icon: github
+        href: https://github.com/HiDefTextiles/Sjonabok-stafrof
+        aria-label: GitHub
+  page-footer:
+    left: |
+      Source-chart forms and modern-alt reconstructions are labeled separately. The TXT grids are the reusable motif source; see the README for scope, attribution, and license details.
+    right:
+      - text: "Project README"
+        href: https://github.com/HiDefTextiles/Sjonabok-stafrof#readme
+
+format:
+  html:
+    theme:
+      - cosmo
+      - styles/hi-site.scss
+      - styles/hidef.scss
+      - styles/gallery.scss
+    css:
+      - styles/hi-watermark.css
+    include-in-header:
+      - text: |
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    toc: true
+    smooth-scroll: true
+    anchor-sections: true
+    link-external-newwindow: true

@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "build:fonts": "node scripts/build_fonts.mjs && node scripts/build_modern_alt_fonts.mjs && node scripts/build_font_similarity.mjs && node scripts/build_font_frames.mjs && node scripts/build_font_pages.mjs"
+  },
+  "engines": {
+    "node": "23.5.0",
+    "npm": "10.9.2"
+  },
+  "devDependencies": {
+    "opentype.js": "^2.0.0"
+  }
+}

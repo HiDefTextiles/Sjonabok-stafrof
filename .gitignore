@@ -1,0 +1,13 @@
+gallery/node_modules/
+gallery/_site/
+gallery/.quarto/
+gallery/font-pages/
+gallery/fonts/modern-alt/
+gallery/fonts/*.ttf
+gallery/fonts/font-index.json
+gallery/fonts/modern-alt-index.json
+gallery/fonts/font-group-frames.json
+gallery/fonts/similarity-metrics.json
+gallery/fonts/Sjonabok-fonts-*.zip
+gallery/*.quarto_ipynb
+gallery/*_files/

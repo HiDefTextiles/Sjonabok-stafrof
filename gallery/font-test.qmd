@@ -1,0 +1,56 @@
+---
+title: "Test the fonts"
+subtitle: "Type your own sample and compare source-chart and modern-alt versions."
+page-layout: full
+toc: false
+include-after-body:
+  - text: <script type="module" src="js/fonts.js"></script>
+---
+
+```{=html}
+<div class="font-lab">
+<p><a href="index.qmd">← Sjónabókarstafróf catalog</a> · <a href="font-families.qmd">Explore source groups and frames</a></p>
+<section class="font-controls" aria-labelledby="font-controls-title">
+<h2 id="font-controls-title">Your sample</h2>
+<label for="font-text">Text to preview</label>
+<textarea id="font-text" rows="2" maxlength="500">The quick brown fox jumps over the lazy dog.</textarea>
+<div class="font-control-row">
+<label for="font-variant">Letter set</label>
+<select id="font-variant">
+<option value="source">Source charts</option>
+<option value="modern-alt">Modern alt</option>
+</select>
+</div>
+<p class="font-intro">Source charts show only letters recorded for that alphabet. The modern alt fills gaps with related source-chart glyphs where possible; accented vowels are built from their base chart with a small stitch-grid acute. No AI-generated glyphs are included in the current build. Every TXT motif and reconstruction source is listed in the chart page and download index.</p>
+<p id="font-status" class="font-status" role="status" aria-live="polite">Loading font charts…</p>
+</section>
+<section id="font-grid" class="font-grid" aria-label="Pattern font previews"></section>
+</div>
+```
+
+::: {.font-source-note}
+These are experimental fonts made from the book’s chart patterns. The chart labels are transcriptions and may need correction. The Futhark page is kept separate from the Latin-letter fonts; some of its runes are not yet identified.
+:::
+
+## How similar are the source charts?
+
+We compare the shapes of source glyphs that have the same transcribed letter label. Each glyph is cropped to its filled cells, scaled proportionally into an 18 × 18 binary grid, then centered. For each shared letter, similarity is the Jaccard score: the number of cells filled in both shapes divided by the number filled in either. A page-pair score is the unweighted average across its shared letters. Pairs with fewer than three shared labelled letters are excluded.
+
+| Comparison | Page pairs | Mean | Median |
+|:--|--:|--:|--:|
+| Pages grouped under the same manuscript ID | 137 | 0.351 | 0.332 |
+| Pages from different manuscript IDs | 986 | 0.364 | 0.335 |
+
+The current analysis covers 49 Latin chart fonts grouped into eight manuscript ID prefixes. It does **not** show that pages from different manuscripts are more alike: the small difference between the averages can reflect which letters happen to be charted, their labels, and the normalization method. The measure ignores color, stitch texture, spacing, page layout, dating, and reader perception. It is an exploratory way to describe binary silhouettes, not a historical attribution or a quality score. Within-manuscript results vary; the per-group counts and ranges, all pair scores, and the calculation method are in the [similarity metrics data](fonts/similarity-metrics.json).
+
+### Modernization method
+
+The modern-alt fonts use existing source glyphs wherever available. A missing letter is borrowed first from another chart with the same manuscript ID prefix; if no such chart carries it, the donor is selected by the highest average silhouette score across the letters the two charts share. The per-glyph index records the chosen donor and score. Acute vowels without a source chart are reconstructed from their base glyph with a two-cell stitch-grid acute accent. These are documented design decisions, not original manuscript forms. The [font README](fonts/README.md) describes regeneration and the metric's limitations.
+
+### Research framing and validation
+
+This project treats font-making as data-driven artistic research: the surviving charts provide historical evidence, while selecting, completing, and spacing glyphs produces a contemporary interpretation. The metric above makes one part of the comparison explicit and repeatable; it does not establish that a reconstruction is historically authentic or visually successful. Font research uses multiple similarity measures because rankings can vary with the metric, resolution, and character ([Takizawa, Hoshi & Chen, 2020](https://doi.org/10.5057/ijae.IJAE-D-19-00012)). Typography-generation research also notes that there is no single standardized evaluation metric ([Shimoda et al., WACV 2024](https://openaccess.thecvf.com/content/WACV2024/papers/Shimoda_Towards_Diverse_and_Consistent_Typography_Generation_WACV_2024_paper.pdf)).
+
+To assess goodness of fit responsibly, the next research pass should compare several shape measures on the same glyph pairs, inspect matched examples in their original page context, and ask independent reviewers to rate source-style fidelity and legibility without seeing which glyphs are reconstructed. Report the prompts, scale, reviewer backgrounds, agreement, and disagreements alongside scores. Keep historical claims (what a chart documents) distinct from design judgments (what makes a modern Icelandic glyph recognizable). Digitization conditions matter too: the [IFLA rare-book and manuscript digitization guidelines](https://ifla.org/wp-content/uploads/2019/05/assets/rare-books-and-manuscripts/rbms-guidelines/guidelines-for-planning-digitization.pdf) emphasize image fidelity, color, and capture quality; these source properties should be preserved or documented before interpreting binary stitch masks.
+
+The paper trail should preserve the page image, chart transcription, label confidence, reconstruction steps, donor, metric settings, and review feedback for every glyph. This makes the font itself a research output and keeps its interpretive choices open to examination. For background, see Karen Cheng’s textbook [*Designing Type*](https://www.jstor.org/stable/j.ctv19dsxpn) on letter structure, optical compensation, and legibility; the research volume [*Designing Type Revivals*](https://draw-down.com/products/designing-type-revivals), which focuses on procedures for relating new designs to historical sources; and the [Re-typographe case study](https://revue-backoffice.com/en/issues/01-making-do-making-with/david-valance-thomas-bouville-re-typographe), which describes source transcription, digitization, and choices about absent characters.
