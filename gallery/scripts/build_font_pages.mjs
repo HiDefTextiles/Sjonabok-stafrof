@@ -42,7 +42,7 @@ include-after-body:
 
 <section aria-labelledby="modern-motifs-${font.id}">
 <h2 id="modern-motifs-${font.id}">Modern-alt glyph provenance</h2>
-<p class="font-provenance-note">No AI-generated glyphs are included in this build. Missing modern letters use documented source-chart donors or the programmatic acute construction.</p>
+<p class="font-provenance-note">No AI-generated, cross-chart borrowed, or programmatically created glyphs are included in this draft. Only charted glyphs and same-chart case forms are used; unsupported characters are marked with a rosette.</p>
 <p class="font-modern-status" role="status" aria-live="polite">Loading modern-alt TXT motifs…</p>
 <div class="font-modern-glyph-sheet" data-modern-sheet="${font.id}"></div>
 </section>

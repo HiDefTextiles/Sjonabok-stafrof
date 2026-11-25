@@ -14,17 +14,13 @@ async function main() {
     detail.href = `font-pages/${font.id}.html`;
     detail.textContent = "Open chart page";
     const group = document.createElement("p");
-    group.textContent = `Source ID group: ${groupOf(font.id)} · ${font.glyphCount} labelled charts`;
-    const download = document.createElement("p");
-    const link = document.createElement("a");
-    link.href = `fonts/${font.filename}`;
-    link.download = font.filename;
-    link.textContent = "Download source-chart TTF";
-    download.append(link);
-    card.append(title, group, detail, download);
+    const classes = font.characterClasses || [];
+    const classLabel = classes.length === 2 ? "letters and numbers" : classes[0] === "numbers" ? "numbers only" : "letters only";
+    group.textContent = `Source ID group: ${groupOf(font.id)} · ${font.glyphCount} charted glyphs · ${classLabel}`;
+    card.append(title, group, detail);
     catalog.append(card);
   }
-  status.textContent = `${index.fonts.length} chart pages. Open a page to see each digitized TXT motif, the group frame, provenance, and font downloads.`;
+  status.textContent = `${index.fonts.length} chart pages. Open a page to see the TXT motifs, provenance, and downloads.`;
 }
 
 main().catch((error) => { status.textContent = `Font catalog could not be loaded: ${error.message}`; });

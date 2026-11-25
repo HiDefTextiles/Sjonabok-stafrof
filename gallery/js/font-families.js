@@ -37,9 +37,6 @@ async function renderGroup(frame, metrics, fonts) {
   const pages = text("p", "", `${frame.fontCount} chart pages in this source-ID group`);
   const chosen = text("p", "", `Frame motif: ${frame.patternId} · ${frame.patternKind} · ${frame.treatment}`);
   const rationale = text("p", "", frame.rationale);
-  const motifLink = text("a", "", "Download frame motif TXT");
-  motifLink.href = `patterns/txt/${frame.patternId}.txt`;
-  motifLink.download = `${frame.patternId}.txt`;
   const response = await fetch(`patterns/txt/${frame.patternId}.txt`);
   if (response.ok) card.append(matrixSvg((await response.text()).split(/\r?\n/u).filter((row) => /^[01]+$/u.test(row)), `Sjónabók pattern ${frame.patternId}`));
   const stats = metrics.find((item) => item.id === frame.sourceGroup);
@@ -52,7 +49,7 @@ async function renderGroup(frame, metrics, fonts) {
     item.append(link);
     linkList.append(item);
   }
-  card.append(heading, pages, chosen, rationale, motifLink, linkList);
+  card.append(heading, pages, chosen, rationale, linkList);
   return card;
 }
 

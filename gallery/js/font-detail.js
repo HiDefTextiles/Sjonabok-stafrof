@@ -92,10 +92,8 @@ function addFrame(frameElement, patternRows, treatment, estimatedWidthCells) {
 
 function provenanceText(record, addition) {
   if (!addition) return "Source chart glyph";
-  if (addition.method === "sibling-chart") return `Reused chart glyph · donor ${addition.sourceFontId}`;
-  if (addition.method === "source-base-plus-acute" || addition.method === "sibling-base-plus-acute") return "Programmatic TXT reconstruction · base glyph plus stitch-grid acute; no AI";
   if (addition.method === "source-chart-shared-case") return `Source chart shared across letter case · ${addition.sourceFontId}`;
-  return `Reconstructed · ${addition.method || "method not recorded"}`;
+  return `Same-chart case form · ${addition.method || "method not recorded"}`;
 }
 
 async function renderGlyphs(sheet, glyphs, status, additions = new Map()) {
@@ -122,6 +120,40 @@ async function renderGlyphs(sheet, glyphs, status, additions = new Map()) {
   status.textContent = `${glyphs.length} glyph TXT matrices shown. These 0/1 grids are the stitch motifs; the TTF preserves their square-cell outlines.`;
 }
 
+function appendMissingGlyphs(sheet, missingCharacters) {
+  for (const character of missingCharacters) {
+    const tile = make("article", "font-matrix-card font-missing-card");
+    tile.append(make("h3", "font-matrix-label", character));
+    const marker = make("img", "font-missing-rosette");
+    marker.src = "../img/rosette-missing.svg";
+    marker.alt = `Rosette placeholder: no approved glyph for ${character}`;
+    tile.append(marker, make("p", "font-provenance-badge", "No chart glyph or new reconstruction in this draft"));
+    sheet.append(tile);
+  }
+}
+
+function makeSpecimen(text, family, characters) {
+  const specimen = make("p", "font-detail-specimen");
+  specimen.style.fontFamily = `"${family}"`;
+  const supported = new Set(characters || []);
+  for (const character of text) {
+    if (/\s/u.test(character) || supported.has(character)) {
+      specimen.append(document.createTextNode(character));
+      continue;
+    }
+    const marker = make("span", "font-missing-glyph");
+    marker.setAttribute("aria-label", `No source-chart glyph for ${character}`);
+    marker.title = `No source-chart glyph for ${character}`;
+    const image = document.createElement("img");
+    image.src = "../img/rosette-missing.svg";
+    image.alt = "";
+    image.setAttribute("aria-hidden", "true");
+    marker.append(image);
+    specimen.append(marker);
+  }
+  return specimen;
+}
+
 async function main() {
   const [sourceIndex, sourceData, modernIndex, frameIndex] = await Promise.all([
     fetch(sourceIndexUrl).then((response) => response.json()),
@@ -139,8 +171,7 @@ async function main() {
   const familySource = `sjonabok-${id}`;
   const sourceFace = new FontFace(familySource, `url("../fonts/${sourceFont.filename}")`);
   document.fonts.add(await sourceFace.load());
-  const specimen = make("p", "font-detail-specimen", "Sjónabókarstafróf · Á á Ð ð Þ þ Æ æ Ö ö");
-  specimen.style.fontFamily = `"${familySource}"`;
+  const specimen = makeSpecimen("Sjónabókarstafróf · Á á Ð ð Þ þ Æ æ Ö ö", familySource, sourceFont.characters);
   root.prepend(specimen);
 
   const sourceSheet = root.querySelector(`[data-glyph-sheet="${id}"]`);
@@ -152,6 +183,8 @@ async function main() {
 
   await renderGlyphs(sourceSheet, glyphs, sourceStatus);
   await renderGlyphs(modernSheet, modernFont.glyphs, modernStatus, additions);
+  appendMissingGlyphs(modernSheet, modernFont.missingCharacters || []);
+  modernStatus.textContent = `${modernFont.glyphs.length} TXT glyphs included; ${(modernFont.missingCharacters || []).length} characters remain marked with the rosette.`;
   const sourceWidth = Math.max(1, ...sourceDefinition.glyphs.map((glyph) => Math.max(...glyph.rows.map((row) => row.length))));
   const columns = Math.min(6, Math.max(1, Math.ceil(Math.sqrt(glyphs.length))));
   addFrame(root.querySelector(".font-glyph-sheet-frame"), await matrixAt(`../${frame.matrixFile}`), frame.treatment, columns * (sourceWidth + 8));

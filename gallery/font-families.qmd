@@ -19,7 +19,7 @@ The 2007–45 source group has no border or edging chart in the current pattern 
 ::: {.font-source-note}
 ## Similarity across source groups
 
-The within-group scores summarize binary silhouette overlap between pages with at least three shared labels. They are exploratory descriptive statistics, not validated typeface-family classifications. The downloadable [metrics data](fonts/similarity-metrics.json) contains the method, limitations, per-group summaries, and page-pair scores.
+The within-group scores summarize binary silhouette overlap between pages with at least three shared labels. They are exploratory descriptive statistics, not validated typeface-family classifications. The metrics JSON in the repository contains the method, limitations, per-group summaries, and page-pair scores.
 
 <div id="font-similarity-summary"></div>
 :::

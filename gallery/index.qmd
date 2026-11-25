@@ -18,4 +18,5 @@ The font catalog keeps the source chart, its reusable TXT stitch motifs, and the
 
 ::: {.font-source-note}
 TXT matrices are plain 0/1 stitch grids and are the reusable motif files. TTF paths are verified against those grids. The TTF is vector geometry: its cell pattern is exact, while a word processor may rasterize or antialias it differently at different sizes. No EPS files are included.
+Download links are kept on each individual font page.
 :::

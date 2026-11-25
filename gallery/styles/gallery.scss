@@ -449,6 +449,8 @@ html.embedded {
 .font-frame-corner.right { transform: scaleX(-1); }
 .font-glyph-sheet, .font-modern-glyph-sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 0.65rem; }
 .font-matrix-card { min-width: 0; border: 1px solid rgba($hi-blue, 0.25); padding: 0.55rem; background: white; }
+.font-missing-card { background: rgba($hi-teal, 0.08); }
+.font-missing-rosette { display: block; width: 3rem; height: 3rem; margin: 0.5rem auto; }
 .font-matrix-label { margin: 0 0 0.4rem; color: $hi-blue; font-size: 1.15rem; }
 .font-matrix-svg { display: block; max-width: 100%; max-height: 130px; margin: 0 auto 0.45rem; fill: $hi-blue; shape-rendering: crispEdges; }
 .font-provenance-badge { margin: 0.35rem 0; font-size: 0.74rem; line-height: 1.3; }

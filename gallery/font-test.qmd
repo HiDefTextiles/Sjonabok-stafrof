@@ -21,7 +21,7 @@ include-after-body:
 <option value="modern-alt">Modern alt</option>
 </select>
 </div>
-<p class="font-intro">Source charts show only letters recorded for that alphabet. The modern alt fills gaps with related source-chart glyphs where possible; accented vowels are built from their base chart with a small stitch-grid acute. No AI-generated glyphs are included in the current build. Every TXT motif and reconstruction source is listed in the chart page and download index.</p>
+<p class="font-intro">Each source font keeps the character classes shown on its chart: a numbers-only chart stays numbers-only, while a chart with both letters and numbers keeps both. Modern Alt includes only charted glyphs and case forms from the same chart. It does not borrow from other charts or invent missing glyphs in this draft; a rosette marks anything unavailable.</p>
 <p id="font-status" class="font-status" role="status" aria-live="polite">Loading font charts…</p>
 </section>
 <section id="font-grid" class="font-grid" aria-label="Pattern font previews"></section>
@@ -41,11 +41,20 @@ We compare the shapes of source glyphs that have the same transcribed letter lab
 | Pages grouped under the same manuscript ID | 137 | 0.351 | 0.332 |
 | Pages from different manuscript IDs | 986 | 0.364 | 0.335 |
 
-The current analysis covers 49 Latin chart fonts grouped into eight manuscript ID prefixes. It does **not** show that pages from different manuscripts are more alike: the small difference between the averages can reflect which letters happen to be charted, their labels, and the normalization method. The measure ignores color, stitch texture, spacing, page layout, dating, and reader perception. It is an exploratory way to describe binary silhouettes, not a historical attribution or a quality score. Within-manuscript results vary; the per-group counts and ranges, all pair scores, and the calculation method are in the [similarity metrics data](fonts/similarity-metrics.json).
+The current analysis covers 49 Latin chart fonts grouped into eight manuscript ID prefixes. It does **not** show that pages from different manuscripts are more alike: the small difference between the averages can reflect which letters happen to be charted, their labels, and the normalization method. The measure ignores color, stitch texture, spacing, page layout, dating, and reader perception. It is an exploratory way to describe binary silhouettes, not a historical attribution or a quality score. Within-manuscript results vary; the generated metrics data records per-group counts, page-pair scores, and the calculation method.
 
 ### Modernization method
 
-The modern-alt fonts use existing source glyphs wherever available. A missing letter is borrowed first from another chart with the same manuscript ID prefix; if no such chart carries it, the donor is selected by the highest average silhouette score across the letters the two charts share. The per-glyph index records the chosen donor and score. Acute vowels without a source chart are reconstructed from their base glyph with a two-cell stitch-grid acute accent. These are documented design decisions, not original manuscript forms. The [font README](fonts/README.md) describes regeneration and the metric's limitations.
+Modern Alt currently includes only glyphs charted for that font and case forms copied from the same chart. It does not borrow from another chart or create new glyphs in this draft. Missing characters are listed in the index and marked by a reusable rosette in the interface. Future additions need a reviewed, traceable source or a documented reconstruction method. The [font README](fonts/README.md) describes regeneration and the metric's limitations.
+
+### Help: keeping glyphs aligned
+
+- Compare fonts with the same sample, point size, line height, and display zoom. Keep each TXT cell at the same size; do not resize individual glyphs to make a sample look even.
+- Set the baseline and any ascender/descender guides from chart evidence where possible. Record the guide positions instead of guessing from one glyph.
+- Inspect letters in words as well as one by one. When spacing looks uneven, adjust advance widths or side bearings in a separately recorded typography pass; these metrics change spacing around the outline, not the TXT-derived shape.
+- Keep the source TXT unchanged. Any optical resizing should be a separate, labeled version because its outline would no longer match the exact grid.
+
+FontForge documents the baseline and side bearings and advises assessing glyph metrics in the context of neighboring glyphs ([metrics, spacing, and kerning](https://fontforge.org/docs/tutorial/editexample5.html); [metrics view](https://fontforge.org/docs/ui/mainviews/metricsview.html)). Microsoft’s OpenType specification defines ascender, descender, and line-gap fields used for line layout ([OS/2 metrics](https://learn.microsoft.com/en-us/typography/opentype/otspec190/os2)). These references guide a later spacing pass; they do not determine the historical baseline or proportions of any specific Sjónabók chart.
 
 ### Research framing and validation
 

@@ -126,7 +126,14 @@ function pathFor(rows, cell, left = 0) {
   return { path: pathData, width: Math.max(1, width * cell + cell + left * 2) };
 }
 
-function makeFont(definition, fallbackRows) {
+function characterClasses(characters) {
+  const classes = [];
+  if (characters.some((character) => /\p{Letter}/u.test(character))) classes.push("letters");
+  if (characters.some((character) => /\p{Number}/u.test(character))) classes.push("numbers");
+  return classes;
+}
+
+function makeFont(definition) {
   const glyphs = definition.glyphs;
   const lookup = new Map();
   for (const g of glyphs) if (!lookup.has(g.character)) lookup.set(g.character, g);
@@ -140,38 +147,30 @@ function makeFont(definition, fallbackRows) {
     if (lookup.has(lower) && !lookup.has(upper)) lookup.set(upper, lookup.get(lower));
   }
   const cell = 100;
-  const maximumHeight = Math.max(1, fallbackRows.length, ...glyphs.map((g) => g.rows.length));
+  const maximumHeight = Math.max(1, ...glyphs.map((g) => g.rows.length));
   const ascender = (maximumHeight + 1) * cell;
   const descender = -cell;
   const unitsPerEm = ascender - descender + cell;
-  const fallbackPath = pathFor(fallbackRows, cell);
-  const codes = [
-    ...Array.from({ length: 95 }, (_, i) => i + 32),
-    ...Array.from({ length: 96 }, (_, i) => i + 160),
-    ...Array.from({ length: 336 }, (_, i) => i + 256),
-  ];
   const fontGlyphs = [
-    new opentype.Glyph({ name: ".notdef", unicode: 0, advanceWidth: fallbackPath.width, path: fallbackPath.path }),
+    new opentype.Glyph({ name: ".notdef", unicode: 0, advanceWidth: cell * 3, path: new opentype.Path() }),
     new opentype.Glyph({ name: "space", unicode: 32, advanceWidth: 260, path: new opentype.Path() }),
   ];
-  const mapped = new Set([0, 32]);
-  for (const cp of codes) {
-    if (mapped.has(cp)) continue;
-    const character = String.fromCodePoint(cp), sourceGlyph = lookup.get(character);
-    const shaped = sourceGlyph ? pathFor(sourceGlyph.rows, cell) : fallbackPath;
+  for (const [character, sourceGlyph] of lookup) {
+    const cp = character.codePointAt(0);
+    const shaped = pathFor(sourceGlyph.rows, cell);
     fontGlyphs.push(new opentype.Glyph({
-      name: (sourceGlyph ? "u" : "missing") + cp.toString(16),
+      name: "u" + cp.toString(16),
       unicode: cp, advanceWidth: shaped.width, path: shaped.path,
     }));
-    mapped.add(cp);
   }
   const font = new opentype.Font({
     familyName: definition.name, styleName: "Regular", unitsPerEm,
     ascender, descender, glyphs: fontGlyphs,
   });
   return {
-    font, glyphCount: lookup.size,
+    font, glyphCount: definition.glyphs.length,
     characters: [...lookup.keys()].sort((a, b) => a.localeCompare(b, "en")),
+    characterClasses: characterClasses([...lookup.keys()]),
     outlineRows: [...lookup.entries()].map(([character, glyph]) => [character, glyph.rows]),
   };
 }
@@ -209,6 +208,12 @@ function assertTtfMatchesMatrices(buffer, outlineRows, id) {
     }
     checked++;
   }
+  for (const character of [..."ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÁáÐðÉéÍíÓóÚúÝýÞþÆæÖö0123456789"]) {
+    if (outlineRows.some(([mapped]) => mapped === character)) continue;
+    if (parsed.charToGlyph(character).index !== 0) {
+      throw new Error(`TTF unexpectedly maps unsupported character ${JSON.stringify(character)} in ${id}.`);
+    }
+  }
   return checked;
 }
 
@@ -224,30 +229,24 @@ function main() {
   const index = [];
   let verifiedGlyphCount = 0;
   for (const definition of source.fonts) {
-    const built = makeFont(definition, source.fallback.rows);
+    const built = makeFont(definition);
     const filename = definition.id + ".ttf";
     const buffer = Buffer.from(built.font.toArrayBuffer());
     verifiedGlyphCount += assertTtfMatchesMatrices(buffer, built.outlineRows, definition.id);
     fs.writeFileSync(path.join(outputDir, filename), buffer);
     index.push({
       id: definition.id, name: definition.name, filename, glyphCount: built.glyphCount,
-      characters: built.characters,
+      characters: built.characters, characterClasses: built.characterClasses,
       glyphs: definition.glyphs.map((glyph) => ({ character: glyph.character, txtFile: glyph.txtFile, sourceFile: glyph.sourceFile })),
       unmappedCount: definition.unmappedGlyphs?.length || 0,
       status: source.reviewStatus || "draft", note: source.note || "",
     });
   }
   fs.writeFileSync(path.join(outputDir, "font-index.json"), JSON.stringify({
-    status: source.reviewStatus || "draft", fallback: source.fallback.id,
-    fallbackTxtFile: source.fallback.txtFile, cellGeometry: "one vector cell per 1 in the TXT grid; no crop or geometric resampling",
+    status: source.reviewStatus || "draft",
+    cellGeometry: "one vector cell per 1 in the TXT grid; no crop or geometric resampling",
     fonts: index,
   }, null, 2));
-  const markerRows = source.fallback.rows, markerScale = 12;
-  const markerCells = markerRows.flatMap((row, y) => [...row].flatMap((cell, x) => cell === "1"
-    ? [`<rect x="${x * markerScale}" y="${y * markerScale}" width="${markerScale}" height="${markerScale}"/>`]
-    : []));
-  const markerSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${markerRows[0].length * markerScale} ${markerRows.length * markerScale}" role="img"><g fill="#123b86">${markerCells.join("")}</g></svg>\n`;
-  fs.writeFileSync(path.join(outputDir, "missing-mark.svg"), markerSvg);
   console.log(`Built ${index.length} TrueType fonts; verified ${verifiedGlyphCount} TTF glyph outlines against TXT grids.`);
 }
 main();

@@ -9,11 +9,11 @@ Visit the [font gallery](https://hideftextiles.github.io/Sjonabok-stafrof/) to b
 ## What you’ll find
 
 - **Source-chart fonts** are made from the glyph shapes transcribed from each chart. Draft or uncertain labels are identified in the data and on the pages.
-- **Modern Alt** is a separate, clearly labeled set with documented additions to fill gaps. It uses related chart glyphs where possible; missing accented forms are assembled from their base glyph and a small stitch-grid acute. No AI-generated glyphs are included in this release.
+- **Modern Alt** is a separate, clearly labeled draft. It includes only glyphs charted for that font and case forms copied from the same chart. It does not borrow from other charts or invent missing glyphs in this release; the interface marks missing characters with a reusable rosette.
 - **Exact grid geometry:** each filled TXT cell becomes a square in the matching TTF glyph outline. The build checks the saved outlines against the grids.
 - **Decorative frames:** a small selection of border motifs from the digitized pattern corpus frames each TXT sheet. The rosette used for one group is labeled as a new display treatment because that group has no border chart in the current index.
 
-The current font set covers 49 Latin alphabet charts and includes 1,019 source glyph grids, plus one reference marker. The separate Futhark sheet and any unreconciled inventory entries are outside this font set; this release does not claim that every chart component in the corpus has been transcribed. The eight source-ID groups organize project records and do not claim historical typeface-family relationships.
+The current font set covers 49 Latin alphabet charts and includes 1,019 source glyph grids, plus one reference marker. Most charts are letters only; one is numbers only, and a chart containing both classes keeps both. The separate Futhark sheet and any unreconciled inventory entries are outside this font set; this release does not claim that every chart component in the corpus has been transcribed. The eight source-ID groups organize project records and do not claim historical typeface-family relationships.
 
 ## Rebuild the site
 
@@ -27,7 +27,7 @@ npm run build:fonts --prefix gallery
 quarto render gallery
 ```
 
-The GitHub Pages workflow runs those same steps. The package lockfile pins the font-generation dependency. To correct a label, edit `gallery/fonts/font-source.json`; to change a glyph’s pixel art, edit the matching file in `gallery/fonts/source-txt/` or `gallery/fonts/modern-alt-txt/`. Frame assignments are in `gallery/fonts/font-groups.yml`. The eight selected frame TXT files and their corpus metadata are in `gallery/patterns/`.
+The GitHub Pages workflow runs those same steps. The package lockfile pins the font-generation dependency. To correct a label, edit `gallery/fonts/font-source.json`; to change a glyph’s pixel art, edit its file in `gallery/fonts/source-txt/`. Modern Alt grids are generated from that source data. Frame assignments are in `gallery/fonts/font-groups.yml`. The eight selected frame TXT files and their corpus metadata are in `gallery/patterns/`.
 
 ## Source files and rights
 

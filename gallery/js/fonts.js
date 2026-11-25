@@ -21,15 +21,15 @@ function element(tag, className, value) {
   return node;
 }
 
-function appendSample(sample, text, supported, showMissing) {
+function appendSample(sample, text, supported, variant) {
   sample.replaceChildren();
   for (const character of text) {
-    if (showMissing && /\p{L}/u.test(character) && !supported.has(character)) {
+    if (!/\s/u.test(character) && !supported.has(character)) {
       const marker = element("span", "font-missing-glyph");
-      marker.setAttribute("aria-label", `Missing source chart for ${character}`);
-      marker.title = `No chart for ${character} in this source alphabet`;
+      marker.setAttribute("aria-label", `No ${variant} glyph for ${character}`);
+      marker.title = `No recorded glyph for ${character} in this ${variant}`;
       const image = document.createElement("img");
-      image.src = "fonts/missing-mark.svg";
+      image.src = "img/rosette-missing.svg";
       image.alt = "";
       image.setAttribute("aria-hidden", "true");
       marker.append(image);
@@ -42,49 +42,42 @@ function appendSample(sample, text, supported, showMissing) {
 
 function updateNotes(note, text, sourceCharacters, altFont, modernMode) {
   note.replaceChildren();
-  const letters = [...new Set([...text].filter((character) => /\p{L}/u.test(character)))];
+  const characters = [...new Set([...text].filter((character) => !/\s/u.test(character)))];
   if (!modernMode) {
-    const missing = letters.filter((character) => !sourceCharacters.has(character));
+    const missing = characters.filter((character) => !sourceCharacters.has(character));
     if (missing.length) {
-      note.append(element("strong", "", "No source chart in this alphabet:"));
+      note.append(element("strong", "", "Not recorded in this chart:"));
       note.append(element("p", "", missing.join(" ")));
-      note.append(element("small", "", "The manuscript mark in the preview stands in for each missing chart."));
+      note.append(element("small", "", "A rosette marks each character absent from this chart."));
     } else {
-      note.append(element("p", "", "Every letter in this sample has a chart in this alphabet."));
+      note.append(element("p", "", "Every non-space character in this sample is charted here."));
     }
     return;
   }
 
   const additions = new Map(altFont.additions.map((entry) => [entry.character, entry]));
-  const usedAdditions = letters.map((character) => additions.get(character)).filter(Boolean);
-  const sourceOnly = letters.filter((character) => !altFont.characters.includes(character));
+  const usedAdditions = characters.map((character) => additions.get(character)).filter(Boolean);
+  const missing = characters.filter((character) => !altFont.characters.includes(character));
   if (usedAdditions.length) {
     const addedCharacters = [...new Set(usedAdditions.map((entry) => entry.character))];
-    note.append(element("strong", "", "Modern-alt letters supplied:"));
+    note.append(element("strong", "", "Case forms supplied from this chart:"));
     note.append(element("p", "", addedCharacters.join(" ")));
-    const accents = usedAdditions.filter((entry) => entry.accent);
-    if (accents.length) note.append(element("small", "", "Accents are drawn as two stitch-grid cells above the base chart."));
-    const donors = [...new Set(usedAdditions.filter((entry) => entry.method === "sibling-chart").map((entry) => entry.sourceFontId))];
-    if (donors.length) note.append(element("small", "", `Sibling charts used: ${donors.join(", ")}`));
-  } else {
-    note.append(element("p", "", "The typed letters are already present in this source alphabet."));
+    note.append(element("small", "", "Uppercase/lowercase aliases use only a glyph from this same chart."));
   }
-  if (sourceOnly.length) note.append(element("small", "", `Outside this modern set: ${[...new Set(sourceOnly)].join(" ")}`));
+  if (missing.length) {
+    note.append(element("strong", "", "Not available in this Modern Alt draft:"));
+    note.append(element("p", "", [...new Set(missing)].join(" ")));
+    note.append(element("small", "", "No chart donor or new glyph has been approved for these characters."));
+  } else if (!usedAdditions.length) {
+    note.append(element("p", "", "Every non-space character in this sample has a glyph in this draft."));
+  }
 }
 
 function createCard(sourceFont, altFont, families) {
   const card = element("article", "font-card");
   const head = element("div", "font-card-head");
   const heading = element("h2", "", sourceFont.name);
-  const download = element("div", "font-downloads");
-  const sourceLink = element("a", "", "Source TTF");
-  sourceLink.href = `fonts/${sourceFont.filename}`;
-  sourceLink.download = sourceFont.filename;
-  const altLink = element("a", "", "Modern alt TTF");
-  altLink.href = `fonts/modern-alt/${altFont.filename}`;
-  altLink.download = altFont.filename;
-  download.append(sourceLink, altLink);
-  head.append(heading, download);
+  head.append(heading);
 
   const body = element("div", "font-card-body");
   const sample = element("p", "font-preview");
@@ -99,7 +92,7 @@ function createCard(sourceFont, altFont, families) {
     const family = modernMode ? families.modern : families.source;
     sample.style.fontFamily = `"${family}"`;
     sample.dataset.variant = mode;
-    appendSample(sample, text, modernMode ? new Set(altFont.characters) : sourceCharacters, !modernMode);
+    appendSample(sample, text, modernMode ? new Set(altFont.characters) : sourceCharacters, modernMode ? "Modern Alt" : "source-chart");
     updateNotes(notes, text, sourceCharacters, altFont, modernMode);
   }
   return { card, render };
@@ -141,7 +134,7 @@ async function start() {
     render();
   });
   const loadedCount = loadedResults.filter((result) => result.status === "fulfilled").length;
-  status.textContent = `${cards.length} source alphabets ready; ${loadedCount} source previews loaded. Each card reports missing letters from its chart.`;
+  status.textContent = `${cards.length} chart sets ready; ${loadedCount} source previews loaded. Rosettes mark every character not present in the selected font.`;
 }
 
 start().catch((error) => {

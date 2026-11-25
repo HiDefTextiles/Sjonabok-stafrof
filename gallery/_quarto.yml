@@ -58,7 +58,7 @@ project:
     - fonts/**
     - patterns/**
     - js/**
-    - img/hi/**
+    - img/**
 
 lang: en
 
