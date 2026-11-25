@@ -8,8 +8,9 @@ Visit the [font gallery](https://hideftextiles.github.io/Sjonabok-stafrof/) to b
 
 ## What you’ll find
 
-- **Source-chart fonts** are made from the glyph shapes transcribed from each chart. Draft or uncertain labels are identified in the data and on the pages.
-- **Modern Alt** is a separate, clearly labeled draft. It includes only glyphs charted for that font and case forms copied from the same chart. It does not borrow from other charts or invent missing glyphs in this release; the interface marks missing characters with a reusable rosette.
+- Each chart has one detail page with two font downloads: `-org.ttf` preserves its source-chart glyphs, and `-alt.ttf` adds only approved forms. Charted glyphs remain blue; added Alt glyphs are teal. Missing forms use a rosette.
+- Alt keeps the chart’s character classes. It can reuse an exact labeled glyph from another page in the same manuscript group when the charts’ median glyph heights differ by at most one stitch row. It does not invent glyphs or use donors from other manuscript groups.
+- The first image is a reassembled TXT overview, framed by a border chosen in `font-groups.yml` for that manuscript group. It is generated from the stitch grids and is not the original manuscript scan.
 - **Exact grid geometry:** each filled TXT cell becomes a square in the matching TTF glyph outline. The build checks the saved outlines against the grids.
 - **Decorative frames:** a small selection of border motifs from the digitized pattern corpus frames each TXT sheet. The rosette used for one group is labeled as a new display treatment because that group has no border chart in the current index.
 

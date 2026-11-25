@@ -7,7 +7,7 @@ include-after-body:
   - text: <script type="module" src="js/font-catalog.js"></script>
 ---
 
-The font catalog keeps the source chart, its reusable TXT stitch motifs, and the generated TTF together. Open a chart page to download its TXT motifs and inspect how the source-chart and modern-alt fonts were assembled.
+Each chart has one page with a generated, bordered TXT overview, individual stitch motifs, and paired Org and Alt TTF downloads. Open a chart page to inspect the glyph sources and compare the two versions.
 
 ::: {.font-navigation}
 [Explore source groups and border motifs](font-families.qmd) · [Try the fonts with your own text](font-test.qmd)

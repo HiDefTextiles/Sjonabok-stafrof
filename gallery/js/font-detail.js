@@ -18,21 +18,44 @@ async function matrixAt(url) {
   return (await response.text()).replace(/^\uFEFF/u, "").split(/\r?\n/u).filter((row) => /^[01]+$/u.test(row));
 }
 
-function matrixSvg(rows, label, pixel = 6) {
-  const width = Math.max(1, ...rows.map((row) => row.length));
-  const height = Math.max(1, rows.length);
+function matrixSvg(rows, label, pixel = 6, comparisonGrid = null, added = false) {
+  const glyphWidth = Math.max(1, ...rows.map((row) => row.length));
+  const glyphHeight = Math.max(1, rows.length);
+  const width = comparisonGrid?.width || glyphWidth;
+  const height = comparisonGrid?.height || glyphHeight;
+  const offsetX = Math.floor((width - glyphWidth) / 2) * pixel;
+  const offsetY = (height - glyphHeight) * pixel;
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", `0 0 ${width * pixel} ${height * pixel}`);
   svg.setAttribute("role", "img");
   svg.setAttribute("aria-label", label);
   svg.setAttribute("class", "font-matrix-svg");
+  if (added) svg.classList.add("font-matrix-svg-alt");
   svg.style.setProperty("--matrix-width", `${width * pixel}px`);
   svg.style.setProperty("--matrix-height", `${height * pixel}px`);
+  if (comparisonGrid) {
+    for (let y = 5; y < height; y += 5) {
+      const guide = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      guide.setAttribute("x1", "0");
+      guide.setAttribute("x2", String(width * pixel));
+      guide.setAttribute("y1", String(y * pixel));
+      guide.setAttribute("y2", String(y * pixel));
+      guide.setAttribute("class", "font-matrix-guide");
+      svg.append(guide);
+    }
+    const baseline = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    baseline.setAttribute("x1", "0");
+    baseline.setAttribute("x2", String(width * pixel));
+    baseline.setAttribute("y1", String(height * pixel - 1));
+    baseline.setAttribute("y2", String(height * pixel - 1));
+    baseline.setAttribute("class", "font-matrix-guide-baseline");
+    svg.append(baseline);
+  }
   rows.forEach((row, y) => [...row].forEach((cell, x) => {
     if (cell !== "1") return;
     const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("x", String(x * pixel));
-    rect.setAttribute("y", String(y * pixel));
+    rect.setAttribute("x", String(offsetX + x * pixel));
+    rect.setAttribute("y", String(offsetY + y * pixel));
     rect.setAttribute("width", String(pixel));
     rect.setAttribute("height", String(pixel));
     svg.append(rect);
@@ -63,7 +86,7 @@ function bandSvg(rows, widthCells, pixel = 4) {
 }
 
 function addFrame(frameElement, patternRows, treatment, estimatedWidthCells) {
-  const sheet = frameElement.querySelector(".font-glyph-sheet");
+  const sheet = frameElement.querySelector(".font-chart-overview");
   frameElement.replaceChildren();
   frameElement.classList.add("has-corpus-frame");
   if (treatment === "repeat-border") {
@@ -93,10 +116,13 @@ function addFrame(frameElement, patternRows, treatment, estimatedWidthCells) {
 function provenanceText(record, addition) {
   if (!addition) return "Source chart glyph";
   if (addition.method === "source-chart-shared-case") return `Source chart shared across letter case · ${addition.sourceFontId}`;
+  if (addition.method === "same-manuscript-matching-glyph") {
+    return `Same-manuscript glyph · ${addition.sourceFontId} · chart median height differs by ${addition.medianHeightDifference} stitch row(s)`;
+  }
   return `Same-chart case form · ${addition.method || "method not recorded"}`;
 }
 
-async function renderGlyphs(sheet, glyphs, status, additions = new Map()) {
+async function renderGlyphs(sheet, glyphs, status, additions = new Map(), comparisonGrid = null) {
   sheet.replaceChildren();
   for (const glyph of glyphs) {
     const tile = make("article", "font-matrix-card");
@@ -105,8 +131,8 @@ async function renderGlyphs(sheet, glyphs, status, additions = new Map()) {
     const txtFile = glyph.txtFile;
     try {
       const rows = await matrixAt(`../fonts/${txtFile}`);
-      tile.append(matrixSvg(rows, `${glyph.character || "Unlabelled"} binary stitch chart`));
       const provenance = additions.get(glyph.character);
+      tile.append(matrixSvg(rows, `${glyph.character || "Unlabelled"} binary stitch chart`, 5, comparisonGrid, Boolean(provenance)));
       tile.append(make("p", "font-provenance-badge", provenanceText(glyph, provenance)));
       const link = make("a", "font-matrix-download", "Download TXT motif");
       link.href = `../fonts/${txtFile}`;
@@ -118,6 +144,104 @@ async function renderGlyphs(sheet, glyphs, status, additions = new Map()) {
     sheet.append(tile);
   }
   status.textContent = `${glyphs.length} glyph TXT matrices shown. These 0/1 grids are the stitch motifs; the TTF preserves their square-cell outlines.`;
+}
+
+function overviewSvg(glyphs, comparisonGrid) {
+  const columns = 6;
+  const pixel = 5;
+  const labelBand = 20;
+  const cellWidth = comparisonGrid.width * pixel + 20;
+  const cellHeight = comparisonGrid.height * pixel + labelBand + 10;
+  const rows = Math.ceil(glyphs.length / columns);
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${columns * cellWidth} ${rows * cellHeight}`);
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "Reassembled TXT chart overview with five-stitch comparison guides");
+  svg.classList.add("font-chart-overview-svg");
+
+  glyphs.forEach((glyph, index) => {
+    const rowsForGlyph = glyph.rows || [];
+    const glyphWidth = Math.max(1, ...rowsForGlyph.map((row) => row.length));
+    const glyphHeight = Math.max(1, rowsForGlyph.length);
+    const cellX = (index % columns) * cellWidth;
+    const cellY = Math.floor(index / columns) * cellHeight;
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("x", String(cellX + cellWidth / 2));
+    text.setAttribute("y", String(cellY + 14));
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("class", "font-chart-overview-label");
+    text.textContent = glyph.character || "Unlabelled";
+    svg.append(text);
+
+    const xOffset = cellX + Math.floor((comparisonGrid.width - glyphWidth) / 2) * pixel + 10;
+    const yOffset = cellY + labelBand + (comparisonGrid.height - glyphHeight) * pixel;
+    for (let guideY = 5; guideY < comparisonGrid.height; guideY += 5) {
+      const guide = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      guide.setAttribute("x1", String(cellX + 10));
+      guide.setAttribute("x2", String(cellX + cellWidth - 10));
+      guide.setAttribute("y1", String(cellY + labelBand + guideY * pixel));
+      guide.setAttribute("y2", String(cellY + labelBand + guideY * pixel));
+      guide.setAttribute("class", "font-matrix-guide");
+      svg.append(guide);
+    }
+    const baseline = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    baseline.setAttribute("x1", String(cellX + 10));
+    baseline.setAttribute("x2", String(cellX + cellWidth - 10));
+    baseline.setAttribute("y1", String(cellY + labelBand + comparisonGrid.height * pixel - 1));
+    baseline.setAttribute("y2", String(cellY + labelBand + comparisonGrid.height * pixel - 1));
+    baseline.setAttribute("class", "font-matrix-guide-baseline");
+    svg.append(baseline);
+
+    rowsForGlyph.forEach((row, y) => [...row].forEach((cell, x) => {
+      if (cell !== "1") return;
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", String(xOffset + x * pixel));
+      rect.setAttribute("y", String(yOffset + y * pixel));
+      rect.setAttribute("width", String(pixel));
+      rect.setAttribute("height", String(pixel));
+      svg.append(rect);
+    }));
+  });
+  return svg;
+}
+
+function setupPageNavigation() {
+  const nav = root.querySelector(".font-page-nav");
+  const navigate = (direction) => {
+    const link = nav?.querySelector(`[data-direction="${direction}"]`);
+    if (link) window.location.assign(link.href);
+  };
+  let start = null;
+  document.addEventListener("keydown", (event) => {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    if (/^(INPUT|TEXTAREA|SELECT|BUTTON)$/u.test(event.target.tagName) || event.target.isContentEditable) return;
+    if (event.key === "ArrowLeft" && nav?.querySelector('[data-direction="previous"]')) {
+      event.preventDefault();
+      navigate("previous");
+    }
+    if (event.key === "ArrowRight" && nav?.querySelector('[data-direction="next"]')) {
+      event.preventDefault();
+      navigate("next");
+    }
+  });
+  document.addEventListener("touchstart", (event) => {
+    if (event.touches.length !== 1 || event.target.closest("a, button, input, textarea, select, [contenteditable='true']")) {
+      start = null;
+      return;
+    }
+    const touch = event.touches[0];
+    start = { x: touch.clientX, y: touch.clientY };
+  }, { passive: true });
+  document.addEventListener("touchend", (event) => {
+    if (!start || event.changedTouches.length !== 1) return;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    start = null;
+    if (Math.abs(dx) < 65 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+    navigate(dx < 0 ? "next" : "previous");
+  }, { passive: true });
+  document.addEventListener("touchcancel", () => { start = null; }, { passive: true });
 }
 
 function appendMissingGlyphs(sheet, missingCharacters) {
@@ -155,6 +279,7 @@ function makeSpecimen(text, family, characters) {
 }
 
 async function main() {
+  setupPageNavigation();
   const [sourceIndex, sourceData, modernIndex, frameIndex] = await Promise.all([
     fetch(sourceIndexUrl).then((response) => response.json()),
     fetch(sourceDataUrl).then((response) => response.json()),
@@ -181,12 +306,19 @@ async function main() {
   const modernStatus = root.querySelector(".font-modern-status");
   const modernSheet = root.querySelector(`[data-modern-sheet="${id}"]`);
 
-  await renderGlyphs(sourceSheet, glyphs, sourceStatus);
-  await renderGlyphs(modernSheet, modernFont.glyphs, modernStatus, additions);
+  const allRows = sourceData.fonts.flatMap((font) => font.glyphs.flatMap((glyph) => glyph.rows || []));
+  const comparisonGrid = {
+    width: Math.max(1, ...allRows.map((row) => row.length)),
+    height: Math.max(1, ...sourceData.fonts.flatMap((font) => font.glyphs.map((glyph) => (glyph.rows || []).length))),
+  };
+  root.querySelector(`[data-chart-overview="${id}"]`).append(overviewSvg(sourceDefinition.glyphs, comparisonGrid));
+
+  await renderGlyphs(sourceSheet, glyphs, sourceStatus, new Map(), comparisonGrid);
+  await renderGlyphs(modernSheet, modernFont.glyphs, modernStatus, additions, comparisonGrid);
   appendMissingGlyphs(modernSheet, modernFont.missingCharacters || []);
   modernStatus.textContent = `${modernFont.glyphs.length} TXT glyphs included; ${(modernFont.missingCharacters || []).length} characters remain marked with the rosette.`;
   const sourceWidth = Math.max(1, ...sourceDefinition.glyphs.map((glyph) => Math.max(...glyph.rows.map((row) => row.length))));
-  const columns = Math.min(6, Math.max(1, Math.ceil(Math.sqrt(glyphs.length))));
+  const columns = 6;
   addFrame(root.querySelector(".font-glyph-sheet-frame"), await matrixAt(`../${frame.matrixFile}`), frame.treatment, columns * (sourceWidth + 8));
 }
 

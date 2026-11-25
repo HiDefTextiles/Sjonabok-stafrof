@@ -6,11 +6,13 @@ The per-glyph `.txt` matrices in `source-txt/<font-id>/` are the editable source
 
 These are **drafts**. The character labels came from earlier manual splits and may be wrong. The editable character-to-chart mappings and source matrices are kept in `font-source.json` and `source-txt/` for review. Each source TTF maps only charted letters/numbers and same-chart case forms; unsupported characters are not mapped. The website marks them with a reusable rosette.
 
-## Modern alt
+## Org and Alt fonts
 
-The `modern-alt/` folder contains a second draft set of 49 fonts. Each font preserves the source chart’s character classes: letter charts get a modern-letter target set, number charts get a digit target set, and charts with both get both. The font includes only direct chart glyphs and case forms copied from that same chart. It does not borrow from other charts or invent new glyphs in this release. Missing target characters are recorded in `modern-alt-index.json` and shown with a rosette on the site. Every included glyph also has a `.txt` grid in `modern-alt-txt/<font-id>/`.
+Each chart page offers two paired files: `<font-id>-org.ttf` is the source-chart version and `<font-id>-alt.ttf` is the Alt version. The Alt font preserves the source chart’s character classes: letter charts get letters, number charts get numbers, and charts with both keep both. It begins with glyphs and case forms from the same chart.
 
-No cross-chart donor or programmatic glyph reconstruction is included in this release. The Modern Alt set is intentionally incomplete until a donor can be justified or a new glyph can be reconstructed and documented in a later iteration.
+For a missing character, Alt may reuse the exact labeled glyph from another chart in the same manuscript ID group if that chart’s median glyph height differs from the target chart by no more than one stitch row. The index records the donor page, label, and height comparison. No cross-manuscript donors or programmatic glyph construction are included. Characters without a qualifying source stay missing and are marked with a rosette. Original chart glyphs display in blue; added Alt glyphs display in teal. Each included Alt glyph has a `.txt` grid in `modern-alt-txt/<font-id>/`.
+
+The first image on each font page is a generated TXT overview, not a manuscript scan. It arranges the transcribed glyph grids and applies the border selected for that manuscript group in `font-groups.yml`. Comparison guides use one shared stitch scale and do not alter the TXT files.
 
 Some chart labels remain unknown or uncertain, and the chart forms need visual review before the fonts should be considered final. The EPS files are source material and must not be committed to this repository.
 
@@ -33,7 +35,7 @@ For an artistic-research paper, keep a versioned record of the source image and 
 
 ## Install
 
-Download the individual source-chart or modern-alt `.ttf` file from the matching chart page. On Windows, right-click the font and choose **Install**. On macOS, open it in Font Book and choose **Install**. Restart Word, then select the matching “Sjónabók …” or “Sjónabók … Modern Alt” font family.
+Download both paired `.ttf` files from the matching chart page. The `-org` file preserves the source chart, and the `-alt` file includes qualifying additions. On Windows, right-click a font and choose **Install**. On macOS, open it in Font Book and choose **Install**. Restart Word, then select the matching “Sjónabók … Org” or “Sjónabók … Alt” font family.
 
 ## Regenerate
 

@@ -426,7 +426,9 @@ html.embedded {
   white-space: pre-wrap;
   font-size: clamp(1.55rem, 3vw, 2.2rem);
   line-height: 1.35;
+  color: $hi-blue;
 }
+.font-preview-added { color: $hi-teal; }
 .font-missing-glyph { display: inline-block; width: 0.78em; height: 0.9em; margin: 0 0.04em; vertical-align: -0.08em; }
 .font-missing-glyph img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .font-notes { min-width: 0; border-left: 1px solid $hi-blue; padding-left: 0.65rem; font-size: 0.85rem; line-height: 1.35; overflow-wrap: anywhere; }
@@ -435,11 +437,17 @@ html.embedded {
 .font-notes small { display: block; margin-top: 0.35rem; }
 .font-source-note { max-width: 80ch; margin-top: 1rem; }
 .font-detail { max-width: 1200px; margin: 0 auto; }
+.font-page-nav { display: flex; justify-content: space-between; gap: 1rem; max-width: 30rem; margin: 0.25rem 0 0.75rem; font-size: 0.88rem; }
+.font-page-nav span[aria-disabled="true"] { min-width: 4rem; }
 .font-detail-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 0.6rem 0 1rem; }
 .font-detail-specimen { margin: 0.6rem 0; color: $hi-blue; font-size: clamp(1.8rem, 4vw, 3rem); overflow-wrap: anywhere; }
 .font-detail-status, .font-modern-status { color: $hi-blue; font-weight: 700; }
 .font-provenance-note { max-width: 85ch; background: $hi-paper; border-left: 4px solid $hi-pink; padding: 0.6rem 0.8rem; }
 .font-glyph-sheet-frame { margin: 1rem 0 1.5rem; }
+.font-chart-overview { padding: 0.35rem; background: white; }
+.font-chart-overview-svg { display: block; width: 100%; max-width: 870px; height: auto; margin: 0 auto; fill: $hi-blue; shape-rendering: crispEdges; }
+.font-chart-overview-label { fill: $hi-blue; font: 600 14px sans-serif; }
+.font-guide-note { max-width: 78ch; margin: 0.35rem 0 0.8rem; font-size: 0.82rem; }
 .font-frame-horizontal { width: 100%; overflow: hidden; line-height: 0; }
 .font-frame-band { display: block; width: 100%; height: auto; min-height: 0.5rem; fill: $hi-blue; }
 .font-frame-content { border-left: 3px solid $hi-blue; border-right: 3px solid $hi-blue; padding: 0.75rem; background: rgba($hi-paper, 0.45); }
@@ -452,7 +460,10 @@ html.embedded {
 .font-missing-card { background: rgba($hi-teal, 0.08); }
 .font-missing-rosette { display: block; width: 3rem; height: 3rem; margin: 0.5rem auto; }
 .font-matrix-label { margin: 0 0 0.4rem; color: $hi-blue; font-size: 1.15rem; }
-.font-matrix-svg { display: block; max-width: 100%; max-height: 130px; margin: 0 auto 0.45rem; fill: $hi-blue; shape-rendering: crispEdges; }
+.font-matrix-svg { display: block; width: 125px; height: 110px; max-width: 100%; margin: 0 auto 0.45rem; fill: $hi-blue; shape-rendering: crispEdges; }
+.font-matrix-svg-alt { fill: $hi-teal; }
+.font-matrix-guide { stroke: rgba($hi-blue, 0.24); stroke-width: 0.8px; shape-rendering: crispEdges; }
+.font-matrix-guide-baseline { stroke: rgba($hi-pink, 0.8); stroke-width: 1px; shape-rendering: crispEdges; }
 .font-provenance-badge { margin: 0.35rem 0; font-size: 0.74rem; line-height: 1.3; }
 .font-matrix-download { display: inline-block; font-size: 0.78rem; }
 .font-data-error { color: #8b1e1e; font-size: 0.8rem; }

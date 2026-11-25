@@ -65,13 +65,55 @@ function characterClasses(glyphs) {
   ];
 }
 
-function resolveCharacter(target, character) {
+function medianGlyphHeight(font) {
+  const heights = font.glyphs.map((glyph) => glyph.rows.length).sort((a, b) => a - b);
+  return heights.length ? heights[Math.floor(heights.length / 2)] : 0;
+}
+
+function sourceGroup(fontId) {
+  return fontId.replace(/_\d+$/u, "");
+}
+
+function characterClass(character) {
+  if (/\p{Letter}/u.test(character)) return "letters";
+  if (/\p{Number}/u.test(character)) return "numbers";
+  return null;
+}
+
+function findManuscriptDonor(target, character, fonts) {
+  const targetHeight = medianGlyphHeight(target);
+  const targetGroup = sourceGroup(target.id);
+  const candidates = fonts
+    .filter((font) => font.id !== target.id && sourceGroup(font.id) === targetGroup)
+    .filter((font) => characterClasses(font.glyphs).includes(characterClass(character)))
+    .map((font) => ({ font, heightDifference: Math.abs(medianGlyphHeight(font) - targetHeight) }))
+    .filter(({ heightDifference }) => heightDifference <= 1)
+    .sort((a, b) => a.heightDifference - b.heightDifference || a.font.id.localeCompare(b.font.id));
+
+  for (const { font, heightDifference } of candidates) {
+    const source = caseGlyph(font, character);
+    if (!source) continue;
+    return {
+      rows: source.glyph.rows,
+      method: "same-manuscript-matching-glyph",
+      sourceFontId: font.id,
+      sourceCharacter: source.glyph.character,
+      sourceFile: source.glyph.sourceFile,
+      targetMedianHeight: targetHeight,
+      donorMedianHeight: medianGlyphHeight(font),
+      medianHeightDifference: heightDifference,
+    };
+  }
+  return null;
+}
+
+function resolveCharacter(target, character, fonts) {
   const own = caseGlyph(target, character);
   if (own) return {
     rows: own.glyph.rows, method: own.method,
-    sourceFontId: target.id, sourceFile: own.glyph.sourceFile,
+    sourceFontId: target.id, sourceCharacter: own.glyph.character, sourceFile: own.glyph.sourceFile,
   };
-  return null;
+  return findManuscriptDonor(target, character, fonts);
 }
 
 function buildFont(definition, resolved) {
@@ -93,7 +135,7 @@ function buildFont(definition, resolved) {
     }));
   }
   return new opentype.Font({
-    familyName: definition.name + " Modern Alt", styleName: "Regular", unitsPerEm,
+    familyName: definition.name + " Alt", styleName: "Regular", unitsPerEm,
     ascender, descender, glyphs: fontGlyphs,
   });
 }
@@ -150,7 +192,7 @@ function main() {
     ];
     const resolved = new Map(), provenance = [], missingCharacters = [];
     for (const character of targetCharacters) {
-      const record = resolveCharacter(definition, character);
+      const record = resolveCharacter(definition, character, latinFonts);
       if (!record) {
         missingCharacters.push(character);
         continue;
@@ -159,7 +201,7 @@ function main() {
       const exact = definition.glyphs.some((glyph) => glyph.character === character);
       if (!exact) provenance.push({ character, ...record });
     }
-    const filename = definition.id + "-modern-alt.ttf";
+    const filename = definition.id + "-alt.ttf";
     const font = buildFont(definition, resolved);
     const buffer = Buffer.from(font.toArrayBuffer());
     verifiedGlyphCount += assertTtfMatchesMatrices(buffer, resolved, definition.id);
@@ -174,11 +216,11 @@ function main() {
       if (addition) addition.txtFile = txtFile;
     }
     index.push({
-      id: definition.id, name: definition.name + " Modern Alt", filename,
+      id: definition.id, name: definition.name + " Alt", filename,
       sourceCharacters: [...new Set(definition.glyphs.map((glyph) => glyph.character))].sort((a, b) => a.localeCompare(b, "is")),
       characterClasses: classes, targetCharacters, characters: [...resolved.keys()], missingCharacters,
       glyphs, additions: provenance,
-      note: "The set preserves the letter/number classes present on the source chart. Only charted glyphs and case aliases from the same chart are included. No cross-chart borrowing or programmatic new glyphs are used in this release; unsupported characters remain missing.",
+      note: "The set preserves the letter/number classes present on the source chart. It uses chart glyphs and same-chart case forms first. An added character may use the same labeled glyph from another chart in the same manuscript group only when the source charts' median glyph heights differ by no more than one stitch row. No glyphs are drawn or borrowed across manuscripts. Unsupported characters remain missing.",
     });
   }
   for (const entry of fs.readdirSync(path.join(fontDir, "modern-alt-txt"), { withFileTypes: true })) {
@@ -192,7 +234,7 @@ function main() {
   fs.writeFileSync(path.join(fontDir, "modern-alt-index.json"), JSON.stringify({
     status: source.reviewStatus || "draft", alphabet: "Letter and number classes follow each source chart",
     cellGeometry: "one vector cell per 1 in each generated TXT grid; no crop or geometric resampling",
-    method: "Direct chart glyphs and same-chart case aliases only; no cross-chart donors, programmatic new glyphs, or modern typeface fallback.",
+    method: "Direct chart glyphs and same-chart case aliases first; exact labeled glyphs may be reused from the same manuscript group only when source-chart median glyph heights differ by at most one stitch row. No cross-manuscript donors, programmatic glyph construction, or modern typeface fallback.",
     fonts: index,
   }, null, 2));
   console.log(`Built ${index.length} modern-alt TrueType fonts; verified ${verifiedGlyphCount} TTF glyph outlines against TXT grids.`);

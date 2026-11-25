@@ -21,7 +21,7 @@ function element(tag, className, value) {
   return node;
 }
 
-function appendSample(sample, text, supported, variant) {
+function appendSample(sample, text, supported, variant, additions = new Map()) {
   sample.replaceChildren();
   for (const character of text) {
     if (!/\s/u.test(character) && !supported.has(character)) {
@@ -34,6 +34,9 @@ function appendSample(sample, text, supported, variant) {
       image.setAttribute("aria-hidden", "true");
       marker.append(image);
       sample.append(marker);
+    } else if (additions.has(character)) {
+      const added = element("span", "font-preview-added", character);
+      sample.append(added);
     } else {
       sample.append(document.createTextNode(character));
     }
@@ -60,14 +63,14 @@ function updateNotes(note, text, sourceCharacters, altFont, modernMode) {
   const missing = characters.filter((character) => !altFont.characters.includes(character));
   if (usedAdditions.length) {
     const addedCharacters = [...new Set(usedAdditions.map((entry) => entry.character))];
-    note.append(element("strong", "", "Case forms supplied from this chart:"));
+    note.append(element("strong", "", "Added Alt forms (shown in teal):"));
     note.append(element("p", "", addedCharacters.join(" ")));
-    note.append(element("small", "", "Uppercase/lowercase aliases use only a glyph from this same chart."));
+    note.append(element("small", "", "Case aliases come from this chart; other additions name their source chart."));
   }
   if (missing.length) {
-    note.append(element("strong", "", "Not available in this Modern Alt draft:"));
+    note.append(element("strong", "", "Not available in this Alt draft:"));
     note.append(element("p", "", [...new Set(missing)].join(" ")));
-    note.append(element("small", "", "No chart donor or new glyph has been approved for these characters."));
+    note.append(element("small", "", "No same-chart or qualifying same-manuscript glyph is available."));
   } else if (!usedAdditions.length) {
     note.append(element("p", "", "Every non-space character in this sample has a glyph in this draft."));
   }
@@ -92,7 +95,7 @@ function createCard(sourceFont, altFont, families) {
     const family = modernMode ? families.modern : families.source;
     sample.style.fontFamily = `"${family}"`;
     sample.dataset.variant = mode;
-    appendSample(sample, text, modernMode ? new Set(altFont.characters) : sourceCharacters, modernMode ? "Modern Alt" : "source-chart");
+    appendSample(sample, text, modernMode ? new Set(altFont.characters) : sourceCharacters, modernMode ? "Alt" : "Org", modernMode ? new Map(altFont.additions.map((entry) => [entry.character, entry])) : new Map());
     updateNotes(notes, text, sourceCharacters, altFont, modernMode);
   }
   return { card, render };
@@ -108,7 +111,7 @@ async function start() {
   for (const sourceFont of sourceIndex.fonts) {
     const altFont = modernById.get(sourceFont.id);
     if (!altFont) continue;
-    const families = { source: `sjonabok-${sourceFont.id}`, modern: `sjonabok-${sourceFont.id}-modern-alt` };
+    const families = { source: `sjonabok-${sourceFont.id}`, modern: `sjonabok-${sourceFont.id}-alt` };
     const card = createCard(sourceFont, altFont, families);
     grid.append(card.card);
     cards.push({ ...card, families, sourceFont, altFont });

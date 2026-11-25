@@ -87,7 +87,7 @@ website:
         aria-label: GitHub
   page-footer:
     left: |
-      Source-chart forms and modern-alt reconstructions are labeled separately. The TXT grids are the reusable motif source; see the README for scope, attribution, and license details.
+      Org preserves chart glyphs; Alt additions are marked in teal. The TXT grids are the reusable motif source; see the README for scope, attribution, and license details.
     right:
       - text: "Project README"
         href: https://github.com/HiDefTextiles/Sjonabok-stafrof#readme

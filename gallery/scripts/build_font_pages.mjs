@@ -10,6 +10,9 @@ const index = JSON.parse(fs.readFileSync(path.join(fontDir, "font-index.json"), 
 const groupOf = (id) => id.replace(/_\d+$/u, "");
 fs.mkdirSync(pagesDir, { recursive: true });
 for (const font of index.fonts) {
+  const fontIndex = index.fonts.findIndex((entry) => entry.id === font.id);
+  const previous = index.fonts[fontIndex - 1];
+  const next = index.fonts[fontIndex + 1];
   const title = JSON.stringify(font.name);
   const group = groupOf(font.id);
   const page = `---
@@ -20,30 +23,37 @@ include-after-body:
   - text: <script type="module" src="../js/font-detail.js"></script>
 ---
 
-[← Font catalog](../index.qmd) · [Font groups and frame choices](../font-families.qmd) · [Test the fonts](../font-test.qmd)
+<nav class="font-page-nav" aria-label="Browse font pages">
+${previous ? `<a rel="prev" data-direction="previous" href="${previous.id}.qmd" aria-label="Previous font: ${previous.name}">← Previous</a>` : `<span aria-disabled="true"></span>`}
+<a href="../index.qmd">Font catalog</a>
+${next ? `<a rel="next" data-direction="next" href="${next.id}.qmd" aria-label="Next font: ${next.name}">Next →</a>` : `<span aria-disabled="true"></span>`}
+</nav>
 
 ::: {.font-detail data-font-id="${font.id}" data-font-group="${group}"}
 
 <p class="font-detail-status" role="status" aria-live="polite">Loading digitized TXT motifs…</p>
 
 <div class="font-detail-actions">
-<a class="btn btn-outline-primary" href="../fonts/${font.filename}" download>Download source-chart TTF</a>
-<a class="btn btn-outline-primary" href="../fonts/modern-alt/${font.id}-modern-alt.ttf" download>Download modern-alt TTF</a>
+<a class="btn btn-outline-primary" href="../fonts/${font.id}-org.ttf" download>Download -org TTF</a>
+<a class="btn btn-outline-primary" href="../fonts/modern-alt/${font.id}-alt.ttf" download>Download -alt TTF</a>
 </div>
 
 <section aria-labelledby="source-motifs-${font.id}">
-<h2 id="source-motifs-${font.id}">Source chart glyphs as TXT motifs</h2>
-<p>Each square is a <code>1</code> stitch cell or a <code>0</code> empty cell from the linked TXT file. These are the digitized chart motifs used to build the source-chart font. The labels are draft transcriptions and may need correction. The original EPS is not included in this repository.</p>
+<h2 id="source-motifs-${font.id}">TXT chart overview</h2>
+<p>This overview reassembles the chart’s digitized TXT glyphs before showing them individually below. It is generated from the 0/1 stitch grids, not an image of the original page. The same YAML-selected border is used for charts in this manuscript group.</p>
 
 <div class="font-glyph-sheet-frame" data-frame-group="${group}">
-<div class="font-glyph-sheet" data-glyph-sheet="${font.id}"></div>
+<div class="font-chart-overview" data-chart-overview="${font.id}"></div>
 </div>
+<h2>Individual TXT glyphs</h2>
+<p class="font-guide-note">Comparison guides use one shared stitch scale across charts. Fine lines mark five stitch rows; the stronger bottom line is a display alignment guide, not a historical annotation. Downloaded TXT grids are unchanged.</p>
+<div class="font-glyph-sheet" data-glyph-sheet="${font.id}"></div>
 </section>
 
 <section aria-labelledby="modern-motifs-${font.id}">
-<h2 id="modern-motifs-${font.id}">Modern-alt glyph provenance</h2>
-<p class="font-provenance-note">No AI-generated, cross-chart borrowed, or programmatically created glyphs are included in this draft. Only charted glyphs and same-chart case forms are used; unsupported characters are marked with a rosette.</p>
-<p class="font-modern-status" role="status" aria-live="polite">Loading modern-alt TXT motifs…</p>
+<h2 id="modern-motifs-${font.id}">Alt glyph provenance</h2>
+<p class="font-provenance-note">Blue grids are charted glyphs. Teal grids are added case forms or exact labeled glyphs reused from a chart in the same manuscript group with a similar median glyph height (within one stitch row). No glyphs are drawn or borrowed across manuscripts; unsupported characters are marked with a rosette.</p>
+<p class="font-modern-status" role="status" aria-live="polite">Loading Alt TXT motifs…</p>
 <div class="font-modern-glyph-sheet" data-modern-sheet="${font.id}"></div>
 </section>
 

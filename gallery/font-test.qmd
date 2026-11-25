@@ -1,6 +1,6 @@
 ---
 title: "Test the fonts"
-subtitle: "Type your own sample and compare source-chart and modern-alt versions."
+subtitle: "Type your own sample and compare the Org and Alt versions."
 page-layout: full
 toc: false
 include-after-body:
@@ -17,11 +17,11 @@ include-after-body:
 <div class="font-control-row">
 <label for="font-variant">Letter set</label>
 <select id="font-variant">
-<option value="source">Source charts</option>
-<option value="modern-alt">Modern alt</option>
+<option value="source">Org</option>
+<option value="modern-alt">Alt</option>
 </select>
 </div>
-<p class="font-intro">Each source font keeps the character classes shown on its chart: a numbers-only chart stays numbers-only, while a chart with both letters and numbers keeps both. Modern Alt includes only charted glyphs and case forms from the same chart. It does not borrow from other charts or invent missing glyphs in this draft; a rosette marks anything unavailable.</p>
+<p class="font-intro">Each chart has paired Org and Alt fonts. Org preserves the source chart. Alt keeps the same letter/number classes and may add an exact labeled glyph from the same manuscript group when chart median heights differ by no more than one stitch row. Blue glyphs are charted; teal glyphs are Alt additions. A rosette marks anything still unavailable.</p>
 <p id="font-status" class="font-status" role="status" aria-live="polite">Loading font charts…</p>
 </section>
 <section id="font-grid" class="font-grid" aria-label="Pattern font previews"></section>
@@ -45,7 +45,7 @@ The current analysis covers 49 Latin chart fonts grouped into eight manuscript I
 
 ### Modernization method
 
-Modern Alt currently includes only glyphs charted for that font and case forms copied from the same chart. It does not borrow from another chart or create new glyphs in this draft. Missing characters are listed in the index and marked by a reusable rosette in the interface. Future additions need a reviewed, traceable source or a documented reconstruction method. The [font README](fonts/README.md) describes regeneration and the metric's limitations.
+The Org font preserves each chart’s labeled glyphs and same-chart case forms. The Alt font starts with those same forms, then may use an exact labeled glyph from another chart in the same manuscript group when their median glyph heights differ by at most one stitch row. The index records each donor. No glyph is borrowed across manuscripts or programmatically constructed in this draft. Unavailable characters remain marked by a reusable rosette. The [font README](fonts/README.md) describes regeneration and the metric's limitations.
 
 ### Help: keeping glyphs aligned
 

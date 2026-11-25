@@ -164,7 +164,7 @@ function makeFont(definition) {
     }));
   }
   const font = new opentype.Font({
-    familyName: definition.name, styleName: "Regular", unitsPerEm,
+    familyName: definition.name + " Org", styleName: "Regular", unitsPerEm,
     ascender, descender, glyphs: fontGlyphs,
   });
   return {
@@ -230,7 +230,7 @@ function main() {
   let verifiedGlyphCount = 0;
   for (const definition of source.fonts) {
     const built = makeFont(definition);
-    const filename = definition.id + ".ttf";
+    const filename = definition.id + "-org.ttf";
     const buffer = Buffer.from(built.font.toArrayBuffer());
     verifiedGlyphCount += assertTtfMatchesMatrices(buffer, built.outlineRows, definition.id);
     fs.writeFileSync(path.join(outputDir, filename), buffer);
