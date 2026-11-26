@@ -7,7 +7,7 @@ include-after-body:
   - text: <script type="module" src="js/font-families.js"></script>
 ---
 
-[← Sjónabókarstafróf catalog](index.qmd) · [Test the fonts](font-test.qmd)
+[← Sjónabókarstafróf catalog](index.qmd) · [Similarity and chart coverage](font-similarity.qmd) · [Test the fonts](font-test.qmd)
 
 The groups below come from shared source-ID prefixes in the chart data. They organize the font pages; they do not assert that the charts are historical typeface families. A YAML file selects one small border or motif from the digitized pattern corpus for each group. The motif is drawn as a decorative frame around the TXT chart sheet; the glyph matrices and TTF outlines are unchanged.
 

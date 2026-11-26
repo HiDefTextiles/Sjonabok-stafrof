@@ -7,10 +7,10 @@ include-after-body:
   - text: <script type="module" src="js/font-catalog.js"></script>
 ---
 
-Each chart page compares its unsplit EPS-to-TXT page with a glyph overview, then shows each glyph once with its source marked by color. The page also contains paired Org and Alt TTF downloads.
+Each chart page compares its unsplit EPS-to-TXT page with a glyph overview, then shows each glyph once with its source marked by color. Org is the original chart font; Alt keeps its glyphs and may supplement missing ones with exact matches from the same manuscript. Both TrueType downloads are on the chart page.
 
 ::: {.font-navigation}
-[Explore source groups and border motifs](font-families.qmd) · [Try the fonts with your own text](font-test.qmd)
+[Explore source groups and border motifs](font-families.qmd) · [Compare glyph similarity and chart coverage](font-similarity.qmd) · [Try the fonts with your own text](font-test.qmd)
 :::
 
 <p id="font-catalog-status" class="font-status" role="status" aria-live="polite">Loading font chart pages…</p>

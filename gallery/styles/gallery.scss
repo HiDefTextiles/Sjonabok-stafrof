@@ -481,9 +481,30 @@ svg.font-chart-original-svg { display: block; width: 100%; max-width: 870px; hei
 .font-catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 0.8rem; }
 .font-catalog-card { padding: 0.8rem; border-top: 4px solid $hi-blue; background: $hi-paper; }
 .font-catalog-card h2 { margin: 0 0 0.3rem; font-size: 1.1rem; }
+.font-catalog-org-sample { display: flex; align-items: baseline; gap: 0.65rem; min-height: 2.8rem; margin: 0.65rem 0; color: $hi-blue; }
+.font-catalog-org-label { color: rgba($hi-blue, 0.65); font-size: 0.72rem; }
+.font-catalog-org-glyphs { font-size: 2rem; letter-spacing: 0.1em; }
+.font-catalog-org-sample.is-unavailable .font-catalog-org-glyphs { color: rgba($hi-blue, 0.55); font-size: 0.8rem; letter-spacing: normal; }
 .font-family-card { padding: 0.8rem; border: 1px solid rgba($hi-blue, 0.3); border-top: 4px solid $hi-blue; background: $hi-paper; }
 .font-family-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 0.8rem; }
 .font-family-card img { max-width: 100%; height: auto; }
+.font-research-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr)); gap: 0.6rem; margin: 0.75rem 0 1.5rem; }
+.font-research-metric { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; padding: 0.7rem; border-top: 3px solid $hi-blue; background: $hi-paper; }
+.font-research-metric-value { color: $hi-blue; font-size: 1.45rem; line-height: 1.1; }
+.font-research-metric-label { font-size: 0.82rem; font-weight: 600; }
+.font-research-metric small { color: rgba($hi-blue, 0.75); font-size: 0.72rem; }
+.font-research-details, .font-coverage-group { margin: 0.65rem 0; padding: 0.65rem 0.8rem; border: 1px solid rgba($hi-blue, 0.2); background: white; }
+.font-research-details summary, .font-coverage-group summary { color: $hi-blue; cursor: pointer; font-weight: 600; }
+.font-research-table-wrap { width: 100%; margin: 0.65rem 0; overflow-x: auto; }
+.font-research-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.font-research-table th, .font-research-table td { padding: 0.45rem 0.55rem; border-bottom: 1px solid rgba($hi-blue, 0.18); text-align: left; vertical-align: top; }
+.font-research-table th { color: $hi-blue; white-space: nowrap; }
+.font-research-empty { color: rgba($hi-blue, 0.7); font-size: 0.88rem; }
+.font-coverage-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 0.5rem; margin-top: 0.65rem; }
+.font-coverage-card { min-width: 0; padding: 0.6rem; background: $hi-paper; }
+.font-coverage-title { display: block; font-weight: 700; }
+.font-coverage-card small { color: rgba($hi-blue, 0.72); }
+.font-coverage-card p { margin: 0.35rem 0 0; font-size: 0.82rem; line-height: 1.4; overflow-wrap: anywhere; }
 
 @media (max-width: 640px) {
   .font-page-comparison { grid-template-columns: 1fr; }

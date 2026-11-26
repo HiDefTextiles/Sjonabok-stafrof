@@ -5,6 +5,7 @@ project:
     - index.qmd
     - font-families.qmd
     - font-test.qmd
+    - font-similarity.qmd
     - font-pages/natmus453_702.qmd
     - font-pages/natmus453_704.qmd
     - font-pages/natmus453_708.qmd
@@ -81,6 +82,8 @@ website:
         href: font-families.qmd
       - text: "Test the fonts"
         href: font-test.qmd
+      - text: "Similarity and coverage"
+        href: font-similarity.qmd
     tools:
       - icon: github
         href: https://github.com/HiDefTextiles/Sjonabok-stafrof

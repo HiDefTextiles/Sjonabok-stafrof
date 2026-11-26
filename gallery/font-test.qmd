@@ -1,6 +1,6 @@
 ---
 title: "Test the fonts"
-subtitle: "Type your own sample and compare the Org and Alt versions."
+subtitle: "Compare the original chart font with its supplemented version."
 page-layout: full
 toc: false
 include-after-body:
@@ -9,18 +9,18 @@ include-after-body:
 
 ```{=html}
 <div class="font-lab">
-<p><a href="index.qmd">← Sjónabókarstafróf catalog</a> · <a href="font-families.qmd">Explore source groups and frames</a></p>
+<p><a href="index.qmd">← Sjónabókarstafróf catalog</a> · <a href="font-families.qmd">Explore source groups and frames</a> · <a href="font-similarity.qmd">Compare glyph similarity and chart coverage</a></p>
 <section class="font-controls" aria-labelledby="font-controls-title">
 <h2 id="font-controls-title">Your sample</h2>
 <textarea id="font-text" aria-label="Text to preview" data-default-sample="The quick brown fox jumps over the lazy dog" placeholder="The quick brown fox jumps over the lazy dog&#10;English pangram sample · uses all 26 letters — edit to your own text" rows="3" maxlength="500"></textarea>
 <div class="font-control-row">
 <label for="font-variant">Letter set</label>
 <select id="font-variant">
-<option value="source">Org</option>
-<option value="modern-alt">Alt</option>
+<option value="source">Org · original</option>
+<option value="modern-alt">Alt · supplemented</option>
 </select>
 </div>
-<p class="font-intro">Each chart has paired Org and Alt fonts. Org preserves the source chart. Alt keeps the same letter/number classes and may add an exact labeled glyph from the same manuscript group when chart median heights differ by no more than one stitch row. Blue glyphs are charted; teal glyphs are Alt additions, and a teal rosette marks anything still unavailable.</p>
+<p class="font-intro"><strong>Org</strong> is the original chart font, built from glyphs transcribed from that page. <strong>Alt</strong> keeps those glyphs and may supplement missing ones with an exact, labeled match from another page in the same manuscript. Each version stays within the chart’s letter or number class. Blue marks charted glyphs; teal marks additions, and a teal rosette marks a character that remains unavailable.</p>
 <p id="font-status" class="font-status" role="status" aria-live="polite">Loading font charts…</p>
 </section>
 <section id="font-grid" class="font-grid" aria-label="Pattern font previews"></section>

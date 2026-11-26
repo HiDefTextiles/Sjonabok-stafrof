@@ -1,0 +1,52 @@
+---
+title: "Similarity and chart coverage"
+subtitle: "Repeated glyphs, partial alphabets, and possible font combinations"
+page-layout: full
+toc: false
+include-after-body:
+  - text: <script type="module" src="js/font-similarity.js"></script>
+---
+
+[← Font catalog](index.qmd) · [Test the fonts](font-test.qmd)
+
+This report compares the transcribed chart glyphs. It separates pixel-identical shapes from close silhouette matches and shows which letters or numbers each chart actually contains. Similarity can help find candidates to review; it cannot by itself establish that pages belong to one typeface family.
+
+<p id="similarity-page-status" class="font-status" role="status" aria-live="polite">Loading comparison data…</p>
+
+<section aria-labelledby="similarity-overview-heading">
+<h2 id="similarity-overview-heading">At a glance</h2>
+<div id="similarity-overview" class="font-research-metrics"></div>
+</section>
+
+<section aria-labelledby="exact-repeats-heading">
+<h2 id="exact-repeats-heading">Exact shape repeats</h2>
+<p>These are matches after removing only blank rows and columns around a glyph. The remaining 0/1 cell shapes must be identical. A repeated glyph is useful evidence for that letter, but it does not mean the full charts are the same font.</p>
+<div id="exact-repeats" class="font-research-table-wrap"></div>
+</section>
+
+<section aria-labelledby="close-repeats-heading">
+<h2 id="close-repeats-heading">Close shape matches</h2>
+<p>For this exploratory screen, a letter pair is listed when its Jaccard score is at least 0.90 after proportional scaling to a centered 18 × 18 binary grid. A page pair is listed at a mean score of at least 0.85 across at least three shared labels. These cutoffs are review aids, not validated definitions of a duplicate font.</p>
+<h3>Closest individual letters</h3>
+<p>The table shows the strongest 40 pairs from the full screened set; the summary reports the full count.</p>
+<div id="close-glyph-matches" class="font-research-table-wrap"></div>
+<h3>Closest whole-chart pairs</h3>
+<div id="close-page-pairs" class="font-research-table-wrap"></div>
+</section>
+
+<section aria-labelledby="coverage-heading">
+<h2 id="coverage-heading">What each chart contains</h2>
+<p>Labels are transcribed from the chart data, sorted in the project’s Icelandic display order, and retain their recorded case. Short lists can indicate a partial alphabet or a number-only chart; they do not establish that a page was split from another one.</p>
+<div id="chart-coverage"></div>
+</section>
+
+<section aria-labelledby="composite-heading">
+<h2 id="composite-heading">Could the charts become one representative TTF?</h2>
+<div id="consolidation-notes" class="font-source-note"></div>
+</section>
+
+### Method and limits
+
+The page-level score is the unweighted mean of binary Jaccard scores for shared, transcribed letters. Case variants are treated as the same label for shape comparison; the chart-coverage lists preserve recorded case. Each shape is cropped to its filled cells, scaled proportionally into an 18 × 18 grid, and centered. Only page pairs with at least three shared letter labels are scored. Number glyphs are included in the exact-shape repeat count, but not in the page-level letter similarity score.
+
+The results depend on transcription labels, thresholded stitch cells, scaling, and which characters happen to be present. They do not compare color, stitch texture, spacing, layout, manuscript dating, or reader perception. Read the [metric JSON](fonts/similarity-metrics.json) and the [font-generation README](fonts/README.md) for the full method and reproducibility notes. Similarity is descriptive; it does not prove common authorship, influence, or a historical font family.

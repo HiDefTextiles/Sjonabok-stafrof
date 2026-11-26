@@ -92,8 +92,8 @@ ${next ? `<a rel="next" data-direction="next" href="${next.id}.qmd" aria-label="
 </div>
 
 <div class="font-detail-actions">
-<a class="btn btn-outline-primary" href="../fonts/${font.id}-org.ttf" download>Download -org TTF</a>
-<a class="btn btn-outline-primary" href="../fonts/modern-alt/${font.id}-alt.ttf" download>Download -alt TTF</a>
+<a class="btn btn-outline-primary" href="../fonts/${font.id}-org.ttf" download>Download Org · original TTF</a>
+<a class="btn btn-outline-primary" href="../fonts/modern-alt/${font.id}-alt.ttf" download>Download Alt · supplemented TTF</a>
 </div>
 
 <section aria-labelledby="glyphs-${font.id}">
