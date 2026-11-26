@@ -1,6 +1,6 @@
 ---
-title: "Similarity and chart coverage"
-subtitle: "Repeated glyphs, partial alphabets, and possible font combinations"
+title: "How the charts compare"
+subtitle: "Find charts with similar lettering and see what each one contains"
 page-layout: full
 toc: false
 include-after-body:
@@ -9,44 +9,35 @@ include-after-body:
 
 [← Font catalog](index.qmd) · [Test the fonts](font-test.qmd)
 
-This report compares the transcribed chart glyphs. It separates pixel-identical shapes from close silhouette matches and shows which letters or numbers each chart actually contains. Similarity can help find candidates to review; it cannot by itself establish that pages belong to one typeface family.
+This page helps you spot repeated or similar chart lettering and check whether charts contain different parts of an alphabet. Similarity is a clue for comparing pages; it does not prove that two charts belong to the same historical font.
 
-<p id="similarity-page-status" class="font-status" role="status" aria-live="polite">Loading comparison data…</p>
+<p id="similarity-page-status" class="font-status" role="status" aria-live="polite">Loading chart comparisons…</p>
 
-<section aria-labelledby="similarity-overview-heading">
-<h2 id="similarity-overview-heading">At a glance</h2>
-<div id="similarity-overview" class="font-research-metrics"></div>
-</section>
+<div id="similarity-overview" class="font-research-metrics" aria-label="Comparison summary"></div>
 
-<section aria-labelledby="exact-repeats-heading">
-<h2 id="exact-repeats-heading">Exact shape repeats</h2>
-<p>These are matches after removing only blank rows and columns around a glyph. The remaining 0/1 cell shapes must be identical. A repeated glyph is useful evidence for that letter, but it does not mean the full charts are the same font.</p>
-<div id="exact-repeats" class="font-research-table-wrap"></div>
-</section>
-
-<section aria-labelledby="close-repeats-heading">
-<h2 id="close-repeats-heading">Close shape matches</h2>
-<p>For this exploratory screen, a letter pair is listed when its Jaccard score is at least 0.90 after proportional scaling to a centered 18 × 18 binary grid. A page pair is listed at a mean score of at least 0.85 across at least three shared labels. These cutoffs are review aids, not validated definitions of a duplicate font.</p>
-<h3>Closest individual letters</h3>
-<p>The table shows the strongest 40 pairs from the full screened set; the summary reports the full count.</p>
-<div id="close-glyph-matches" class="font-research-table-wrap"></div>
-<h3>Closest whole-chart pairs</h3>
-<div id="close-page-pairs" class="font-research-table-wrap"></div>
+<section aria-labelledby="close-pages-heading">
+<h2 id="close-pages-heading">Compare similar charts</h2>
+<p>Choose a pair to see every charted glyph. Letters present on both charts appear larger; glyphs unique to one chart remain visible at a smaller size. Each glyph keeps its chart’s original Org font.</p>
+<label for="similar-chart-pair">Chart pair</label>
+<select id="similar-chart-pair" class="form-select"></select>
+<div id="selected-pair-note" class="font-source-note"></div>
+<div id="selected-pair-cloud" class="font-glyph-cloud" aria-live="polite"></div>
 </section>
 
 <section aria-labelledby="coverage-heading">
-<h2 id="coverage-heading">What each chart contains</h2>
-<p>Labels are transcribed from the chart data, sorted in the project’s Icelandic display order, and retain their recorded case. Short lists can indicate a partial alphabet or a number-only chart; they do not establish that a page was split from another one.</p>
+<h2 id="coverage-heading">What is on each chart?</h2>
+<p>Open a source group to see each chart’s recorded letters and numbers. Different letter ranges may be useful clues when checking for partial alphabets, but do not confirm that pages were meant to be joined.</p>
 <div id="chart-coverage"></div>
 </section>
 
-<section aria-labelledby="composite-heading">
-<h2 id="composite-heading">Could the charts become one representative TTF?</h2>
-<div id="consolidation-notes" class="font-source-note"></div>
+<section aria-labelledby="exact-repeats-heading">
+<h2 id="exact-repeats-heading">Repeated glyphs</h2>
+<p>Some individual letters have exactly the same filled-cell shape on more than one chart. This supports comparing those letters, but does not mean the whole charts are duplicates.</p>
+<div id="exact-repeats"></div>
 </section>
 
-### Method and limits
-
-The page-level score is the unweighted mean of binary Jaccard scores for shared, transcribed letters. Case variants are treated as the same label for shape comparison; the chart-coverage lists preserve recorded case. Each shape is cropped to its filled cells, scaled proportionally into an 18 × 18 grid, and centered. Only page pairs with at least three shared letter labels are scored. Number glyphs are included in the exact-shape repeat count, but not in the page-level letter similarity score.
-
-The results depend on transcription labels, thresholded stitch cells, scaling, and which characters happen to be present. They do not compare color, stitch texture, spacing, layout, manuscript dating, or reader perception. Read the [metric JSON](fonts/similarity-metrics.json) and the [font-generation README](fonts/README.md) for the full method and reproducibility notes. Similarity is descriptive; it does not prove common authorship, influence, or a historical font family.
+<details class="font-method-details">
+<summary>How the comparison works</summary>
+<p>Each glyph is cropped to its filled cells, scaled proportionally to fit a centered 18 × 18 binary grid, then compared by Jaccard overlap. Page scores average shared letter shapes; case variants count as the same label. The close-match screen uses a mean score of 0.85 or above across at least three shared letters. This is an exploratory review aid, not a validated duplicate-font threshold.</p>
+<p>The measure ignores color, stitch texture, spacing, page layout, manuscript dating, and reader perception. Chart coverage retains the recorded case. The [metric data](fonts/similarity-metrics.json) and [font-generation README](fonts/README.md) document the full method and limits.</p>
+</details>
