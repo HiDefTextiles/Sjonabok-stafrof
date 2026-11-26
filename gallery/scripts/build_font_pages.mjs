@@ -21,17 +21,28 @@ for (const font of index.fonts) {
   const modernFont = modernById.get(font.id);
   const frame = frameIndex.groups.find((entry) => entry.sourceGroup === groupOf(font.id));
   if (!modernFont || !frame) throw new Error(`Missing generated data for ${font.id}`);
-  const sharedCaseAliases = new Set(modernFont.additions
-    .filter((entry) => entry.method === "source-chart-shared-case")
-    .map((entry) => entry.character));
+  const isCaseAlias = (entry) => entry.method === "source-chart-shared-case"
+    || (entry.sourceCharacter && entry.sourceCharacter !== entry.character
+      && entry.sourceCharacter.toLocaleLowerCase("is") === entry.character.toLocaleLowerCase("is"));
+  const sharedCaseAliases = new Set(modernFont.additions.filter(isCaseAlias).map((entry) => entry.character));
+  const sourceLetters = font.glyphs.map((glyph) => glyph.character).filter((character) => /\p{Letter}/u.test(character));
+  const hasUppercase = sourceLetters.some((character) => character === character.toUpperCase());
+  const hasLowercase = sourceLetters.some((character) => character === character.toLowerCase());
+  const sourceCase = hasUppercase && !hasLowercase ? "upper" : hasLowercase && !hasUppercase ? "lower" : "both";
+  const redundantMissing = new Set(modernFont.missingCharacters.filter((character) => {
+    if (!/\p{Letter}/u.test(character) || sourceCase === "both") return false;
+    return sourceCase === "upper" ? character !== character.toUpperCase() : character !== character.toLowerCase();
+  }));
+  const hiddenCharacters = new Set([...sharedCaseAliases, ...redundantMissing]);
   const pageData = {
     sourceFont: { id: font.id, pageTxtFile: font.pageTxtFile },
     modernFont: {
       ...modernFont,
-      targetCharacters: modernFont.targetCharacters.filter((character) => !sharedCaseAliases.has(character)),
-      characters: modernFont.characters.filter((character) => !sharedCaseAliases.has(character)),
-      additions: modernFont.additions.filter((entry) => !sharedCaseAliases.has(entry.character)),
-      glyphs: modernFont.glyphs.filter((glyph) => !sharedCaseAliases.has(glyph.character)).map((glyph) => ({
+      targetCharacters: modernFont.targetCharacters.filter((character) => !hiddenCharacters.has(character)),
+      characters: modernFont.characters.filter((character) => !hiddenCharacters.has(character)),
+      additions: modernFont.additions.filter((entry) => !hiddenCharacters.has(entry.character)),
+      missingCharacters: modernFont.missingCharacters.filter((character) => !hiddenCharacters.has(character)),
+      glyphs: modernFont.glyphs.filter((glyph) => !hiddenCharacters.has(glyph.character)).map((glyph) => ({
         ...glyph,
         rows: readMatrix(path.join(fontDir, glyph.txtFile)),
       })),

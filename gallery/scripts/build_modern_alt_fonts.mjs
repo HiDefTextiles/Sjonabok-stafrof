@@ -7,8 +7,8 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const fontDir = path.resolve(scriptDir, "../fonts");
 const sourcePath = path.join(fontDir, "font-source.json");
 const outputDir = path.join(fontDir, "modern-alt");
-const modernUpper = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZÁÐÉÍÓÚÝÞÆÖ"];
-const modernLetters = [...modernUpper, ...modernUpper.map((c) => c.toLowerCase())];
+const modernUpper = [..."AÁBCDÐEÉFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ"];
+const modernLetters = modernUpper.flatMap((character) => [character, character.toLowerCase()]);
 const modernDigits = [..."0123456789"];
 
 function rowsToRuns(rows) {
