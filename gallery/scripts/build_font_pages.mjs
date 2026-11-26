@@ -21,12 +21,21 @@ for (const font of index.fonts) {
   const modernFont = modernById.get(font.id);
   const frame = frameIndex.groups.find((entry) => entry.sourceGroup === groupOf(font.id));
   if (!modernFont || !frame) throw new Error(`Missing generated data for ${font.id}`);
+  const sharedCaseAliases = new Set(modernFont.additions
+    .filter((entry) => entry.method === "source-chart-shared-case")
+    .map((entry) => entry.character));
   const pageData = {
     sourceFont: { id: font.id, pageTxtFile: font.pageTxtFile },
-    modernFont: { ...modernFont, glyphs: modernFont.glyphs.map((glyph) => ({
-      ...glyph,
-      rows: readMatrix(path.join(fontDir, glyph.txtFile)),
-    })) },
+    modernFont: {
+      ...modernFont,
+      targetCharacters: modernFont.targetCharacters.filter((character) => !sharedCaseAliases.has(character)),
+      characters: modernFont.characters.filter((character) => !sharedCaseAliases.has(character)),
+      additions: modernFont.additions.filter((entry) => !sharedCaseAliases.has(entry.character)),
+      glyphs: modernFont.glyphs.filter((glyph) => !sharedCaseAliases.has(glyph.character)).map((glyph) => ({
+        ...glyph,
+        rows: readMatrix(path.join(fontDir, glyph.txtFile)),
+      })),
+    },
     comparisonGrid: modernIndex.comparisonGrid,
     frame,
     frameRows: readMatrix(path.join(galleryDir, frame.matrixFile)),
@@ -78,7 +87,7 @@ ${next ? `<a rel="next" data-direction="next" href="${next.id}.qmd" aria-label="
 
 <section aria-labelledby="glyphs-${font.id}">
 <h2 id="glyphs-${font.id}">Glyphs and provenance</h2>
-<p class="font-provenance-note">Each glyph appears once. Blue means transcribed from this chart. Teal means borrowed from a qualifying same-manuscript chart or reconstructed in a later pass. A teal rosette means the character is still missing.</p>
+<p class="font-provenance-note">Derived upper/lowercase aliases are omitted from this chart view. In the TTF, a missing case maps to its available charted counterpart. Blue means transcribed from this chart; teal means borrowed from a qualifying same-manuscript chart. A teal rosette means the character is still missing.</p>
 <p class="font-guide-note">Comparison guides use one shared stitch scale across charts. Fine lines mark five stitch rows; the stronger bottom line is a display alignment guide, not a historical annotation. Downloaded TXT grids are unchanged.</p>
 <div class="font-glyph-sheet" data-glyph-sheet="${font.id}"></div>
 <p class="font-detail-status font-glyph-status" role="status" aria-live="polite">Loading glyph TXT grids…</p>

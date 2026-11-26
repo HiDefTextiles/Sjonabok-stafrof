@@ -293,15 +293,18 @@ async function main() {
 
   const sourceSheet = root.querySelector(`[data-glyph-sheet="${id}"]`);
   const sourceStatus = root.querySelector(".font-glyph-status");
-  const glyphs = modernFont.glyphs || [];
   const additions = new Map(modernFont.additions.map((entry) => [entry.character, entry]));
+  const sharedCaseAliases = new Set(modernFont.additions
+    .filter((entry) => entry.method === "source-chart-shared-case")
+    .map((entry) => entry.character));
+  const glyphs = (modernFont.glyphs || []).filter((glyph) => !sharedCaseAliases.has(glyph.character));
   const rowsByCharacter = new Map(glyphs.map((glyph) => [glyph.character, glyph.rows]));
   const sourcePageRows = await matrixAt(`../fonts/${sourceFont.pageTxtFile}`);
   const sourcePage = matrixSvg(sourcePageRows, `${id} full unsplit chart TXT`, 1);
   sourcePage.classList.add("font-chart-original-svg");
   root.querySelector(`[data-chart-page="${id}"]`).append(sourcePage);
   const glyphByCharacter = new Map(glyphs.map((glyph) => [glyph.character, glyph]));
-  const overviewItems = modernFont.targetCharacters.map((character) => {
+  const overviewItems = modernFont.targetCharacters.filter((character) => !sharedCaseAliases.has(character)).map((character) => {
     const glyph = glyphByCharacter.get(character);
     if (!glyph) return { character, missing: true };
     const rows = rowsByCharacter.get(character);
