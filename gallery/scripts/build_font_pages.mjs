@@ -31,30 +31,35 @@ ${next ? `<a rel="next" data-direction="next" href="${next.id}.qmd" aria-label="
 
 ::: {.font-detail data-font-id="${font.id}" data-font-group="${group}"}
 
-<p class="font-detail-status" role="status" aria-live="polite">Loading digitized TXT motifs…</p>
+<p class="font-detail-status" role="status" aria-live="polite">Loading TXT page and glyph overview…</p>
+
+<div class="font-page-comparison" aria-label="Book chart and font overview">
+<section class="font-page-panel" aria-labelledby="source-page-${font.id}">
+<h2 id="source-page-${font.id}">Book chart · unsplit TXT</h2>
+<p>Converted from the EPS without splitting or rearranging its glyphs. The EPS itself is not included. The YAML-selected manuscript border frames this page.</p>
+<div class="font-glyph-sheet-frame" data-frame-group="${group}">
+<div class="font-chart-original" data-chart-page="${font.id}"></div>
+</div>
+</section>
+<div class="font-page-divider" aria-hidden="true"></div>
+<section class="font-page-panel" aria-labelledby="font-overview-${font.id}">
+<h2 id="font-overview-${font.id}">Font overview</h2>
+<p>The separated TXT glyphs arranged for comparison. Blue marks charted forms; teal marks added forms. Missing forms use a teal rosette.</p>
+<div class="font-chart-overview" data-chart-overview="${font.id}"></div>
+</section>
+</div>
 
 <div class="font-detail-actions">
 <a class="btn btn-outline-primary" href="../fonts/${font.id}-org.ttf" download>Download -org TTF</a>
 <a class="btn btn-outline-primary" href="../fonts/modern-alt/${font.id}-alt.ttf" download>Download -alt TTF</a>
 </div>
 
-<section aria-labelledby="source-motifs-${font.id}">
-<h2 id="source-motifs-${font.id}">TXT chart overview</h2>
-<p>This overview reassembles the chart’s digitized TXT glyphs before showing them individually below. It is generated from the 0/1 stitch grids, not an image of the original page. The same YAML-selected border is used for charts in this manuscript group.</p>
-
-<div class="font-glyph-sheet-frame" data-frame-group="${group}">
-<div class="font-chart-overview" data-chart-overview="${font.id}"></div>
-</div>
-<h2>Individual TXT glyphs</h2>
+<section aria-labelledby="glyphs-${font.id}">
+<h2 id="glyphs-${font.id}">Glyphs and provenance</h2>
+<p class="font-provenance-note">Each glyph appears once. Blue means transcribed from this chart. Teal means borrowed from a qualifying same-manuscript chart or reconstructed in a later pass. A teal rosette means the character is still missing.</p>
 <p class="font-guide-note">Comparison guides use one shared stitch scale across charts. Fine lines mark five stitch rows; the stronger bottom line is a display alignment guide, not a historical annotation. Downloaded TXT grids are unchanged.</p>
 <div class="font-glyph-sheet" data-glyph-sheet="${font.id}"></div>
-</section>
-
-<section aria-labelledby="modern-motifs-${font.id}">
-<h2 id="modern-motifs-${font.id}">Alt glyph provenance</h2>
-<p class="font-provenance-note">Blue grids are charted glyphs. Teal grids are added case forms or exact labeled glyphs reused from a chart in the same manuscript group with a similar median glyph height (within one stitch row). No glyphs are drawn or borrowed across manuscripts; unsupported characters are marked with a rosette.</p>
-<p class="font-modern-status" role="status" aria-live="polite">Loading Alt TXT motifs…</p>
-<div class="font-modern-glyph-sheet" data-modern-sheet="${font.id}"></div>
+<p class="font-detail-status font-glyph-status" role="status" aria-live="polite">Loading glyph TXT grids…</p>
 </section>
 
 :::

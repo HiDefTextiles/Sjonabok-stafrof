@@ -7,7 +7,7 @@ include-after-body:
   - text: <script type="module" src="js/font-catalog.js"></script>
 ---
 
-Each chart has one page with a generated, bordered TXT overview, individual stitch motifs, and paired Org and Alt TTF downloads. Open a chart page to inspect the glyph sources and compare the two versions.
+Each chart page compares its unsplit EPS-to-TXT page with a glyph overview, then shows each glyph once with its source marked by color. The page also contains paired Org and Alt TTF downloads.
 
 ::: {.font-navigation}
 [Explore source groups and border motifs](font-families.qmd) · [Try the fonts with your own text](font-test.qmd)

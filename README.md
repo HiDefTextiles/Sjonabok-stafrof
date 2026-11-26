@@ -8,9 +8,9 @@ Visit the [font gallery](https://hideftextiles.github.io/Sjonabok-stafrof/) to b
 
 ## What you’ll find
 
-- Each chart has one detail page with two font downloads: `-org.ttf` preserves its source-chart glyphs, and `-alt.ttf` adds only approved forms. Charted glyphs remain blue; added Alt glyphs are teal. Missing forms use a rosette.
+- Each chart has one detail page with two font downloads: `-org.ttf` preserves its source-chart glyphs, and `-alt.ttf` adds only approved forms. Charted glyphs remain blue; added Alt glyphs and missing-character rosettes are teal. Each glyph appears once in the provenance view.
 - Alt keeps the chart’s character classes. It can reuse an exact labeled glyph from another page in the same manuscript group when the charts’ median glyph heights differ by at most one stitch row. It does not invent glyphs or use donors from other manuscript groups.
-- The first image is a reassembled TXT overview, framed by a border chosen in `font-groups.yml` for that manuscript group. It is generated from the stitch grids and is not the original manuscript scan.
+- Font pages compare the original unsplit chart TXT (converted from EPS) with a glyph overview. They stack on mobile and sit side by side on wider screens. A border chosen in `font-groups.yml` frames the unsplit chart; the bottom repeat is mirrored. The original EPS files are not included.
 - **Exact grid geometry:** each filled TXT cell becomes a square in the matching TTF glyph outline. The build checks the saved outlines against the grids.
 - **Decorative frames:** a small selection of border motifs from the digitized pattern corpus frames each TXT sheet. The rosette used for one group is labeled as a new display treatment because that group has no border chart in the current index.
 
@@ -18,7 +18,7 @@ The current font set covers 49 Latin alphabet charts and includes 1,019 source g
 
 ## Rebuild the site
 
-The repository stores the input matrices, labels, YAML frame choices, and build scripts. Generated TTFs, indexes, chart pages, and rendered HTML are build outputs, so they are not checked in.
+The repository stores the unsplit full-page TXT matrices, split glyph matrices, labels, YAML frame choices, and build scripts. Generated TTFs, indexes, chart pages, and rendered HTML are build outputs, so they are not checked in.
 
 Use Node.js 23.5.0, npm 10.9.2, and Quarto 1.9.38. From the repository root:
 
@@ -28,7 +28,7 @@ npm run build:fonts --prefix gallery
 quarto render gallery
 ```
 
-The GitHub Pages workflow runs those same steps. The package lockfile pins the font-generation dependency. To correct a label, edit `gallery/fonts/font-source.json`; to change a glyph’s pixel art, edit its file in `gallery/fonts/source-txt/`. Modern Alt grids are generated from that source data. Frame assignments are in `gallery/fonts/font-groups.yml`. The eight selected frame TXT files and their corpus metadata are in `gallery/patterns/`.
+The GitHub Pages workflow runs those same steps. The package lockfile pins the font-generation dependency. To correct a label, edit `gallery/fonts/font-source.json`; to change a full-page chart transcription, edit `gallery/fonts/source-page-txt/`; to change a glyph, edit its file in `gallery/fonts/source-txt/`. Alt TXT matrices are generated from the approved source glyphs. Frame assignments are in `gallery/fonts/font-groups.yml`. The eight selected frame TXT files and their corpus metadata are in `gallery/patterns/`.
 
 ## Source files and rights
 

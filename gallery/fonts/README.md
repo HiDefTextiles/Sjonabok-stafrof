@@ -12,7 +12,7 @@ Each chart page offers two paired files: `<font-id>-org.ttf` is the source-chart
 
 For a missing character, Alt may reuse the exact labeled glyph from another chart in the same manuscript ID group if that chart’s median glyph height differs from the target chart by no more than one stitch row. The index records the donor page, label, and height comparison. No cross-manuscript donors or programmatic glyph construction are included. Characters without a qualifying source stay missing and are marked with a rosette. Original chart glyphs display in blue; added Alt glyphs display in teal. Each included Alt glyph has a `.txt` grid in `modern-alt-txt/<font-id>/`.
 
-The first image on each font page is a generated TXT overview, not a manuscript scan. It arranges the transcribed glyph grids and applies the border selected for that manuscript group in `font-groups.yml`. Comparison guides use one shared stitch scale and do not alter the TXT files.
+Each font page compares two images: the original unsplit page matrix in `source-page-txt/<font-id>.txt`, converted from EPS, and a separate overview assembled from split glyph grids. On mobile these stack vertically; on wider screens they sit side by side. The YAML-selected manuscript border frames the unsplit page, with the lower repeat mirrored. EPS files are not included. Below the comparison, each glyph is shown once: blue for charted, teal for an added form, and a teal rosette for missing.
 
 Some chart labels remain unknown or uncertain, and the chart forms need visual review before the fonts should be considered final. The EPS files are source material and must not be committed to this repository.
 

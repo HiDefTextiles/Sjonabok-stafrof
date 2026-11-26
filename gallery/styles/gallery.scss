@@ -415,14 +415,14 @@ html.embedded {
 .font-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 490px), 1fr)); gap: 0.9rem; }
 .font-card { min-width: 0; background: $hi-paper; border-top: 4px solid $hi-blue; padding: 0.8rem; }
 .font-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
-.font-card h2 { margin: 0; font-size: 1.05rem; }
+.font-card h2 { margin: 0; color: rgba($hi-blue, 0.62); font-size: 0.82rem; font-weight: 500; }
 .font-downloads { display: flex; gap: 0.75rem; font-size: 0.85rem; }
-.font-card-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(9rem, 0.42fr); gap: 0.8rem; align-items: start; margin-top: 0.6rem; }
+.font-card-body { display: flex; flex-direction: column; gap: 0.35rem; align-items: stretch; margin-top: 0.45rem; }
 .font-preview {
   min-width: 0;
   min-height: 4rem;
   margin: 0;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
   white-space: pre-wrap;
   font-size: clamp(1.55rem, 3vw, 2.2rem);
   line-height: 1.35;
@@ -431,9 +431,9 @@ html.embedded {
 .font-preview-added { color: $hi-teal; }
 .font-missing-glyph { display: inline-block; width: 0.78em; height: 0.9em; margin: 0 0.04em; vertical-align: -0.08em; }
 .font-missing-glyph img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.font-notes { min-width: 0; border-left: 1px solid $hi-blue; padding-left: 0.65rem; font-size: 0.85rem; line-height: 1.35; overflow-wrap: anywhere; }
+.font-notes { min-width: 0; border-left: 0; border-top: 1px solid rgba($hi-blue, 0.18); padding: 0.35rem 0 0; color: rgba($hi-blue, 0.72); font-size: 0.75rem; line-height: 1.3; overflow-wrap: anywhere; }
 .font-notes p { margin: 0.2rem 0; }
-.font-notes strong { color: $hi-blue; }
+.font-notes strong { color: rgba($hi-blue, 0.78); font-weight: 600; }
 .font-notes small { display: block; margin-top: 0.35rem; }
 .font-source-note { max-width: 80ch; margin-top: 1rem; }
 .font-detail { max-width: 1200px; margin: 0 auto; }
@@ -441,21 +441,29 @@ html.embedded {
 .font-page-nav span[aria-disabled="true"] { min-width: 4rem; }
 .font-detail-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 0.6rem 0 1rem; }
 .font-detail-specimen { margin: 0.6rem 0; color: $hi-blue; font-size: clamp(1.8rem, 4vw, 3rem); overflow-wrap: anywhere; }
-.font-detail-status, .font-modern-status { color: $hi-blue; font-weight: 700; }
+.font-detail-status, .font-glyph-status { color: $hi-blue; font-weight: 700; }
 .font-provenance-note { max-width: 85ch; background: $hi-paper; border-left: 4px solid $hi-pink; padding: 0.6rem 0.8rem; }
+.font-page-comparison { display: grid; grid-template-columns: minmax(0, 1fr) 3px minmax(0, 1fr); gap: 1rem; align-items: start; }
+.font-page-panel { min-width: 0; }
+.font-page-divider { align-self: stretch; background: $hi-teal; }
 .font-glyph-sheet-frame { margin: 1rem 0 1.5rem; }
 .font-chart-overview { padding: 0.35rem; background: white; }
 .font-chart-overview-svg { display: block; width: 100%; max-width: 870px; height: auto; margin: 0 auto; fill: $hi-blue; shape-rendering: crispEdges; }
+svg.font-chart-original-svg { display: block; width: 100%; max-width: 870px; height: auto; margin: 0 auto; fill: $hi-blue; shape-rendering: crispEdges; }
 .font-chart-overview-label { fill: $hi-blue; font: 600 14px sans-serif; }
+.font-chart-overview-label-alt { fill: $hi-teal; }
+.font-chart-overview-glyph-alt { fill: $hi-teal; }
 .font-guide-note { max-width: 78ch; margin: 0.35rem 0 0.8rem; font-size: 0.82rem; }
 .font-frame-horizontal { width: 100%; overflow: hidden; line-height: 0; }
 .font-frame-band { display: block; width: 100%; height: auto; min-height: 0.5rem; fill: $hi-blue; }
+.font-frame-horizontal-bottom .font-frame-band { transform: scaleY(-1); }
 .font-frame-content { border-left: 3px solid $hi-blue; border-right: 3px solid $hi-blue; padding: 0.75rem; background: rgba($hi-paper, 0.45); }
 .font-frame-corners { display: flex; justify-content: space-between; align-items: center; min-height: 3rem; border-top: 2px solid $hi-blue; border-bottom: 2px solid $hi-blue; }
 .font-frame-corner { width: 2.5rem; height: 2.5rem; overflow: hidden; }
 .font-frame-corner svg { width: 100%; height: 100%; }
 .font-frame-corner.right { transform: scaleX(-1); }
-.font-glyph-sheet, .font-modern-glyph-sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 0.65rem; }
+.font-frame-corners-bottom .font-frame-corner svg { transform: scaleY(-1); }
+.font-glyph-sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); gap: 0.65rem; }
 .font-matrix-card { min-width: 0; border: 1px solid rgba($hi-blue, 0.25); padding: 0.55rem; background: white; }
 .font-missing-card { background: rgba($hi-teal, 0.08); }
 .font-missing-rosette { display: block; width: 3rem; height: 3rem; margin: 0.5rem auto; }
@@ -475,8 +483,10 @@ html.embedded {
 .font-family-card img { max-width: 100%; height: auto; }
 
 @media (max-width: 640px) {
+  .font-page-comparison { grid-template-columns: 1fr; }
+  .font-page-divider { width: 100%; height: 3px; }
   .font-control-row { align-items: stretch; }
   .font-control-row .btn { width: 100%; }
-  .font-card-body { grid-template-columns: 1fr; }
-  .font-notes { border-left: none; border-top: 1px solid $hi-blue; padding: 0.5rem 0 0; }
+  .font-card-body { display: flex; flex-direction: column; }
+  .font-notes { border-left: 0; border-top: 1px solid rgba($hi-blue, 0.18); padding: 0.35rem 0 0; }
 }

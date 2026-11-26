@@ -47,7 +47,12 @@ function updateNotes(note, text, sourceCharacters, altFont, modernMode) {
   note.replaceChildren();
   const characters = [...new Set([...text].filter((character) => !/\s/u.test(character)))];
   if (!modernMode) {
+    const recorded = new Set(altFont.sourceCharacters || []);
+    const sharedCase = characters.filter((character) => !recorded.has(character) && sourceCharacters.has(character));
     const missing = characters.filter((character) => !sourceCharacters.has(character));
+    if (sharedCase.length) {
+      note.append(element("small", "", `No separate case form in this chart: ${sharedCase.join(" ")} uses the matching chart glyph.`));
+    }
     if (missing.length) {
       note.append(element("strong", "", "Not recorded in this chart:"));
       note.append(element("p", "", missing.join(" ")));
@@ -60,12 +65,17 @@ function updateNotes(note, text, sourceCharacters, altFont, modernMode) {
 
   const additions = new Map(altFont.additions.map((entry) => [entry.character, entry]));
   const usedAdditions = characters.map((character) => additions.get(character)).filter(Boolean);
+  const sharedCaseAdditions = usedAdditions.filter((entry) => entry.method === "source-chart-shared-case");
+  const otherAdditions = usedAdditions.filter((entry) => entry.method !== "source-chart-shared-case");
   const missing = characters.filter((character) => !altFont.characters.includes(character));
-  if (usedAdditions.length) {
-    const addedCharacters = [...new Set(usedAdditions.map((entry) => entry.character))];
+  if (sharedCaseAdditions.length) {
+    note.append(element("small", "", `No separate case form in this chart: ${[...new Set(sharedCaseAdditions.map((entry) => entry.character))].join(" ")} uses the matching chart glyph.`));
+  }
+  if (otherAdditions.length) {
+    const addedCharacters = [...new Set(otherAdditions.map((entry) => entry.character))];
     note.append(element("strong", "", "Added Alt forms (shown in teal):"));
     note.append(element("p", "", addedCharacters.join(" ")));
-    note.append(element("small", "", "Case aliases come from this chart; other additions name their source chart."));
+    note.append(element("small", "", "The source chart is named on the font page."));
   }
   if (missing.length) {
     note.append(element("strong", "", "Not available in this Alt draft:"));

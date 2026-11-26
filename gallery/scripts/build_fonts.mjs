@@ -231,11 +231,15 @@ function main() {
   for (const definition of source.fonts) {
     const built = makeFont(definition);
     const filename = definition.id + "-org.ttf";
+    const pageTxtFile = `source-page-txt/${definition.id}.txt`;
+    if (!fs.existsSync(path.join(fontDir, pageTxtFile))) {
+      throw new Error(`Missing unsplit source-page TXT matrix for ${definition.id}: ${pageTxtFile}`);
+    }
     const buffer = Buffer.from(built.font.toArrayBuffer());
     verifiedGlyphCount += assertTtfMatchesMatrices(buffer, built.outlineRows, definition.id);
     fs.writeFileSync(path.join(outputDir, filename), buffer);
     index.push({
-      id: definition.id, name: definition.name, filename, glyphCount: built.glyphCount,
+      id: definition.id, name: definition.name, filename, pageTxtFile, glyphCount: built.glyphCount,
       characters: built.characters, characterClasses: built.characterClasses,
       glyphs: definition.glyphs.map((glyph) => ({ character: glyph.character, txtFile: glyph.txtFile, sourceFile: glyph.sourceFile })),
       unmappedCount: definition.unmappedGlyphs?.length || 0,

@@ -86,12 +86,12 @@ function bandSvg(rows, widthCells, pixel = 4) {
 }
 
 function addFrame(frameElement, patternRows, treatment, estimatedWidthCells) {
-  const sheet = frameElement.querySelector(".font-chart-overview");
+  const sheet = frameElement.querySelector(".font-chart-original");
   frameElement.replaceChildren();
   frameElement.classList.add("has-corpus-frame");
   if (treatment === "repeat-border") {
     const top = make("div", "font-frame-horizontal");
-    const bottom = make("div", "font-frame-horizontal");
+    const bottom = make("div", "font-frame-horizontal font-frame-horizontal-bottom");
     top.append(bandSvg(patternRows, estimatedWidthCells));
     bottom.append(bandSvg(patternRows, estimatedWidthCells));
     const content = make("div", "font-frame-content");
@@ -108,7 +108,9 @@ function addFrame(frameElement, patternRows, treatment, estimatedWidthCells) {
     }
     const content = make("div", "font-frame-content corner-adaptation");
     content.append(sheet);
-    frameElement.append(corners, content, corners.cloneNode(true));
+    const bottomCorners = corners.cloneNode(true);
+    bottomCorners.classList.add("font-frame-corners-bottom");
+    frameElement.append(corners, content, bottomCorners);
     frameElement.querySelectorAll(".font-frame-corner svg").forEach((svg) => svg.setAttribute("aria-hidden", "true"));
   }
 }
@@ -156,22 +158,33 @@ function overviewSvg(glyphs, comparisonGrid) {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", `0 0 ${columns * cellWidth} ${rows * cellHeight}`);
   svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", "Reassembled TXT chart overview with five-stitch comparison guides");
+  svg.setAttribute("aria-label", "Alt font overview assembled from TXT grids with source, added, and missing forms marked by color");
   svg.classList.add("font-chart-overview-svg");
 
   glyphs.forEach((glyph, index) => {
-    const rowsForGlyph = glyph.rows || [];
-    const glyphWidth = Math.max(1, ...rowsForGlyph.map((row) => row.length));
-    const glyphHeight = Math.max(1, rowsForGlyph.length);
+    const glyphWidth = Math.max(1, ...glyph.rows.map((row) => row.length));
+    const glyphHeight = Math.max(1, glyph.rows.length);
     const cellX = (index % columns) * cellWidth;
     const cellY = Math.floor(index / columns) * cellHeight;
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
     text.setAttribute("x", String(cellX + cellWidth / 2));
     text.setAttribute("y", String(cellY + 14));
     text.setAttribute("text-anchor", "middle");
-    text.setAttribute("class", "font-chart-overview-label");
+    text.setAttribute("class", glyph.added ? "font-chart-overview-label font-chart-overview-label-alt" : "font-chart-overview-label");
     text.textContent = glyph.character || "Unlabelled";
     svg.append(text);
+
+    if (glyph.missing) {
+      const rosette = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      rosette.setAttribute("href", "../img/rosette-missing.svg");
+      rosette.setAttribute("x", String(cellX + cellWidth / 2 - 12));
+      rosette.setAttribute("y", String(cellY + labelBand + comparisonGrid.height * pixel / 2 - 12));
+      rosette.setAttribute("width", "24");
+      rosette.setAttribute("height", "24");
+      rosette.setAttribute("aria-label", `Missing glyph ${glyph.character}`);
+      svg.append(rosette);
+      return;
+    }
 
     const xOffset = cellX + Math.floor((comparisonGrid.width - glyphWidth) / 2) * pixel + 10;
     const yOffset = cellY + labelBand + (comparisonGrid.height - glyphHeight) * pixel;
@@ -192,13 +205,14 @@ function overviewSvg(glyphs, comparisonGrid) {
     baseline.setAttribute("class", "font-matrix-guide-baseline");
     svg.append(baseline);
 
-    rowsForGlyph.forEach((row, y) => [...row].forEach((cell, x) => {
+    glyph.rows.forEach((row, y) => [...row].forEach((cell, x) => {
       if (cell !== "1") return;
       const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       rect.setAttribute("x", String(xOffset + x * pixel));
       rect.setAttribute("y", String(yOffset + y * pixel));
       rect.setAttribute("width", String(pixel));
       rect.setAttribute("height", String(pixel));
+      if (glyph.added) rect.classList.add("font-chart-overview-glyph-alt");
       svg.append(rect);
     }));
   });
@@ -256,28 +270,6 @@ function appendMissingGlyphs(sheet, missingCharacters) {
   }
 }
 
-function makeSpecimen(text, family, characters) {
-  const specimen = make("p", "font-detail-specimen");
-  specimen.style.fontFamily = `"${family}"`;
-  const supported = new Set(characters || []);
-  for (const character of text) {
-    if (/\s/u.test(character) || supported.has(character)) {
-      specimen.append(document.createTextNode(character));
-      continue;
-    }
-    const marker = make("span", "font-missing-glyph");
-    marker.setAttribute("aria-label", `No source-chart glyph for ${character}`);
-    marker.title = `No source-chart glyph for ${character}`;
-    const image = document.createElement("img");
-    image.src = "../img/rosette-missing.svg";
-    image.alt = "";
-    image.setAttribute("aria-hidden", "true");
-    marker.append(image);
-    specimen.append(marker);
-  }
-  return specimen;
-}
-
 async function main() {
   setupPageNavigation();
   const [sourceIndex, sourceData, modernIndex, frameIndex] = await Promise.all([
@@ -288,38 +280,38 @@ async function main() {
   ]);
   const id = root.dataset.fontId;
   const sourceFont = sourceIndex.fonts.find((font) => font.id === id);
-  const sourceDefinition = sourceData.fonts.find((font) => font.id === id);
   const modernFont = modernIndex.fonts.find((font) => font.id === id);
   const frame = frameIndex.groups.find((entry) => entry.sourceGroup === root.dataset.fontGroup);
-  if (!sourceFont || !sourceDefinition || !modernFont || !frame) throw new Error("Font data or source-group frame is missing.");
-
-  const familySource = `sjonabok-${id}`;
-  const sourceFace = new FontFace(familySource, `url("../fonts/${sourceFont.filename}")`);
-  document.fonts.add(await sourceFace.load());
-  const specimen = makeSpecimen("Sjónabókarstafróf · Á á Ð ð Þ þ Æ æ Ö ö", familySource, sourceFont.characters);
-  root.prepend(specimen);
+  if (!sourceFont || !modernFont || !frame) throw new Error("Font data or source-group frame is missing.");
 
   const sourceSheet = root.querySelector(`[data-glyph-sheet="${id}"]`);
-  const sourceStatus = root.querySelector(".font-detail-status");
-  const glyphs = sourceFont.glyphs || [];
+  const sourceStatus = root.querySelector(".font-glyph-status");
+  const glyphs = modernFont.glyphs || [];
   const additions = new Map(modernFont.additions.map((entry) => [entry.character, entry]));
-  const modernStatus = root.querySelector(".font-modern-status");
-  const modernSheet = root.querySelector(`[data-modern-sheet="${id}"]`);
 
   const allRows = sourceData.fonts.flatMap((font) => font.glyphs.flatMap((glyph) => glyph.rows || []));
   const comparisonGrid = {
     width: Math.max(1, ...allRows.map((row) => row.length)),
     height: Math.max(1, ...sourceData.fonts.flatMap((font) => font.glyphs.map((glyph) => (glyph.rows || []).length))),
   };
-  root.querySelector(`[data-chart-overview="${id}"]`).append(overviewSvg(sourceDefinition.glyphs, comparisonGrid));
+  const sourcePageRows = await matrixAt(`../fonts/${sourceFont.pageTxtFile}`);
+  const sourcePage = matrixSvg(sourcePageRows, `${id} full unsplit chart TXT`, 1);
+  sourcePage.classList.add("font-chart-original-svg");
+  root.querySelector(`[data-chart-page="${id}"]`).append(sourcePage);
+  const glyphByCharacter = new Map(glyphs.map((glyph) => [glyph.character, glyph]));
+  const overviewItems = await Promise.all(modernFont.targetCharacters.map(async (character) => {
+    const glyph = glyphByCharacter.get(character);
+    if (!glyph) return { character, missing: true };
+    const rows = await matrixAt(`../fonts/${glyph.txtFile}`);
+    return { ...glyph, rows, added: additions.has(character) };
+  }));
+  root.querySelector(`[data-chart-overview="${id}"]`).append(overviewSvg(overviewItems, comparisonGrid));
 
-  await renderGlyphs(sourceSheet, glyphs, sourceStatus, new Map(), comparisonGrid);
-  await renderGlyphs(modernSheet, modernFont.glyphs, modernStatus, additions, comparisonGrid);
-  appendMissingGlyphs(modernSheet, modernFont.missingCharacters || []);
-  modernStatus.textContent = `${modernFont.glyphs.length} TXT glyphs included; ${(modernFont.missingCharacters || []).length} characters remain marked with the rosette.`;
-  const sourceWidth = Math.max(1, ...sourceDefinition.glyphs.map((glyph) => Math.max(...glyph.rows.map((row) => row.length))));
-  const columns = 6;
-  addFrame(root.querySelector(".font-glyph-sheet-frame"), await matrixAt(`../${frame.matrixFile}`), frame.treatment, columns * (sourceWidth + 8));
+  await renderGlyphs(sourceSheet, glyphs, sourceStatus, additions, comparisonGrid);
+  appendMissingGlyphs(sourceSheet, modernFont.missingCharacters || []);
+  sourceStatus.textContent = `${glyphs.length} available glyphs shown once; ${(modernFont.missingCharacters || []).length} missing characters use a teal rosette.`;
+  const pageWidth = Math.max(1, ...sourcePageRows.map((row) => row.length));
+  addFrame(root.querySelector(".font-glyph-sheet-frame"), await matrixAt(`../${frame.matrixFile}`), frame.treatment, pageWidth);
 }
 
 main().catch((error) => {
