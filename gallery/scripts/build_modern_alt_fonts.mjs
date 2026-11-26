@@ -231,9 +231,15 @@ function main() {
       if (filename.endsWith(".txt") && !expectedTxtFiles.has(filePath)) fs.unlinkSync(filePath);
     }
   }
+  const sourceGlyphs = source.fonts.flatMap((font) => font.glyphs);
+  const comparisonGrid = {
+    width: Math.max(1, ...sourceGlyphs.flatMap((glyph) => glyph.rows.map((row) => row.length))),
+    height: Math.max(1, ...sourceGlyphs.map((glyph) => glyph.rows.length)),
+  };
   fs.writeFileSync(path.join(fontDir, "modern-alt-index.json"), JSON.stringify({
     status: source.reviewStatus || "draft", alphabet: "Letter and number classes follow each source chart",
     cellGeometry: "one vector cell per 1 in each generated TXT grid; no crop or geometric resampling",
+    comparisonGrid,
     method: "Direct chart glyphs and same-chart case aliases first; exact labeled glyphs may be reused from the same manuscript group only when source-chart median glyph heights differ by at most one stitch row. No cross-manuscript donors, programmatic glyph construction, or modern typeface fallback.",
     fonts: index,
   }, null, 2));

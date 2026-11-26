@@ -7,9 +7,31 @@ const galleryDir = path.resolve(scriptDir, "..");
 const fontDir = path.join(galleryDir, "fonts");
 const pagesDir = path.join(galleryDir, "font-pages");
 const index = JSON.parse(fs.readFileSync(path.join(fontDir, "font-index.json"), "utf8"));
+const modernIndex = JSON.parse(fs.readFileSync(path.join(fontDir, "modern-alt-index.json"), "utf8"));
+const frameIndex = JSON.parse(fs.readFileSync(path.join(fontDir, "font-group-frames.json"), "utf8"));
+const modernById = new Map(modernIndex.fonts.map((font) => [font.id, font]));
 const groupOf = (id) => id.replace(/_\d+$/u, "");
+const detailDataDir = path.join(fontDir, "font-detail-data");
+fs.mkdirSync(detailDataDir, { recursive: true });
+function readMatrix(filePath) {
+  return fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/u, "").split(/\r?\n/u).filter((row) => /^[01]+$/u.test(row));
+}
 fs.mkdirSync(pagesDir, { recursive: true });
 for (const font of index.fonts) {
+  const modernFont = modernById.get(font.id);
+  const frame = frameIndex.groups.find((entry) => entry.sourceGroup === groupOf(font.id));
+  if (!modernFont || !frame) throw new Error(`Missing generated data for ${font.id}`);
+  const pageData = {
+    sourceFont: { id: font.id, pageTxtFile: font.pageTxtFile },
+    modernFont: { ...modernFont, glyphs: modernFont.glyphs.map((glyph) => ({
+      ...glyph,
+      rows: readMatrix(path.join(fontDir, glyph.txtFile)),
+    })) },
+    comparisonGrid: modernIndex.comparisonGrid,
+    frame,
+    frameRows: readMatrix(path.join(galleryDir, frame.matrixFile)),
+  };
+  fs.writeFileSync(path.join(detailDataDir, `${font.id}.json`), JSON.stringify(pageData));
   const fontIndex = index.fonts.findIndex((entry) => entry.id === font.id);
   const previous = index.fonts[fontIndex - 1];
   const next = index.fonts[fontIndex + 1];

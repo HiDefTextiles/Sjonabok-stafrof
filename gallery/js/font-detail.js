@@ -1,8 +1,4 @@
 const root = document.querySelector(".font-detail");
-const sourceIndexUrl = "../fonts/font-index.json";
-const sourceDataUrl = "../fonts/font-source.json";
-const modernIndexUrl = "../fonts/modern-alt-index.json";
-const frameIndexUrl = "../fonts/font-group-frames.json";
 const codepointName = (character) => `U+${character.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}`;
 
 function make(tag, className, value) {
@@ -16,6 +12,20 @@ async function matrixAt(url) {
   const response = await fetch(url);
   if (!response.ok) throw new Error(`Could not load TXT matrix ${url}`);
   return (await response.text()).replace(/^\uFEFF/u, "").split(/\r?\n/u).filter((row) => /^[01]+$/u.test(row));
+}
+
+function rowsPath(rows, pixel, offsetX = 0, offsetY = 0) {
+  const commands = [];
+  rows.forEach((row, y) => {
+    for (let x = 0; x < row.length;) {
+      if (row[x] !== "1") { x++; continue; }
+      const start = x;
+      while (x < row.length && row[x] === "1") x++;
+      const runWidth = (x - start) * pixel;
+      commands.push(`M${offsetX + start * pixel},${offsetY + y * pixel}h${runWidth}v${pixel}h${-runWidth}z`);
+    }
+  });
+  return commands.join("");
 }
 
 function matrixSvg(rows, label, pixel = 6, comparisonGrid = null, added = false) {
@@ -51,15 +61,9 @@ function matrixSvg(rows, label, pixel = 6, comparisonGrid = null, added = false)
     baseline.setAttribute("class", "font-matrix-guide-baseline");
     svg.append(baseline);
   }
-  rows.forEach((row, y) => [...row].forEach((cell, x) => {
-    if (cell !== "1") return;
-    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-    rect.setAttribute("x", String(offsetX + x * pixel));
-    rect.setAttribute("y", String(offsetY + y * pixel));
-    rect.setAttribute("width", String(pixel));
-    rect.setAttribute("height", String(pixel));
-    svg.append(rect);
-  }));
+  const cells = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  cells.setAttribute("d", rowsPath(rows, pixel, offsetX, offsetY));
+  svg.append(cells);
   return svg;
 }
 
@@ -124,7 +128,7 @@ function provenanceText(record, addition) {
   return `Same-chart case form · ${addition.method || "method not recorded"}`;
 }
 
-async function renderGlyphs(sheet, glyphs, status, additions = new Map(), comparisonGrid = null) {
+function renderGlyphs(sheet, glyphs, status, rowsByCharacter, additions = new Map(), comparisonGrid = null) {
   sheet.replaceChildren();
   for (const glyph of glyphs) {
     const tile = make("article", "font-matrix-card");
@@ -132,7 +136,8 @@ async function renderGlyphs(sheet, glyphs, status, additions = new Map(), compar
     tile.append(label);
     const txtFile = glyph.txtFile;
     try {
-      const rows = await matrixAt(`../fonts/${txtFile}`);
+      const rows = rowsByCharacter.get(glyph.character);
+      if (!rows) throw new Error(`No embedded TXT rows for ${glyph.character}`);
       const provenance = additions.get(glyph.character);
       tile.append(matrixSvg(rows, `${glyph.character || "Unlabelled"} binary stitch chart`, 5, comparisonGrid, Boolean(provenance)));
       tile.append(make("p", "font-provenance-badge", provenanceText(glyph, provenance)));
@@ -162,8 +167,6 @@ function overviewSvg(glyphs, comparisonGrid) {
   svg.classList.add("font-chart-overview-svg");
 
   glyphs.forEach((glyph, index) => {
-    const glyphWidth = Math.max(1, ...glyph.rows.map((row) => row.length));
-    const glyphHeight = Math.max(1, glyph.rows.length);
     const cellX = (index % columns) * cellWidth;
     const cellY = Math.floor(index / columns) * cellHeight;
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -186,6 +189,21 @@ function overviewSvg(glyphs, comparisonGrid) {
       return;
     }
 
+    if (!Array.isArray(glyph.rows) || !glyph.rows.length) {
+      const rosette = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      rosette.setAttribute("href", "../img/rosette-missing.svg");
+      rosette.setAttribute("x", String(cellX + cellWidth / 2 - 12));
+      rosette.setAttribute("y", String(cellY + labelBand + comparisonGrid.height * pixel / 2 - 12));
+      rosette.setAttribute("width", "24");
+      rosette.setAttribute("height", "24");
+      rosette.setAttribute("aria-label", `Missing glyph data for ${glyph.character}`);
+      svg.append(rosette);
+      return;
+    }
+
+    const glyphWidth = Math.max(1, ...glyph.rows.map((row) => row.length));
+    const glyphHeight = Math.max(1, glyph.rows.length);
+
     const xOffset = cellX + Math.floor((comparisonGrid.width - glyphWidth) / 2) * pixel + 10;
     const yOffset = cellY + labelBand + (comparisonGrid.height - glyphHeight) * pixel;
     for (let guideY = 5; guideY < comparisonGrid.height; guideY += 5) {
@@ -205,16 +223,10 @@ function overviewSvg(glyphs, comparisonGrid) {
     baseline.setAttribute("class", "font-matrix-guide-baseline");
     svg.append(baseline);
 
-    glyph.rows.forEach((row, y) => [...row].forEach((cell, x) => {
-      if (cell !== "1") return;
-      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      rect.setAttribute("x", String(xOffset + x * pixel));
-      rect.setAttribute("y", String(yOffset + y * pixel));
-      rect.setAttribute("width", String(pixel));
-      rect.setAttribute("height", String(pixel));
-      if (glyph.added) rect.classList.add("font-chart-overview-glyph-alt");
-      svg.append(rect);
-    }));
+    const cells = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    cells.setAttribute("d", rowsPath(glyph.rows, pixel, xOffset, yOffset));
+    if (glyph.added) cells.classList.add("font-chart-overview-glyph-alt");
+    svg.append(cells);
   });
   return svg;
 }
@@ -272,46 +284,36 @@ function appendMissingGlyphs(sheet, missingCharacters) {
 
 async function main() {
   setupPageNavigation();
-  const [sourceIndex, sourceData, modernIndex, frameIndex] = await Promise.all([
-    fetch(sourceIndexUrl).then((response) => response.json()),
-    fetch(sourceDataUrl).then((response) => response.json()),
-    fetch(modernIndexUrl).then((response) => response.json()),
-    fetch(frameIndexUrl).then((response) => response.json()),
-  ]);
   const id = root.dataset.fontId;
-  const sourceFont = sourceIndex.fonts.find((font) => font.id === id);
-  const modernFont = modernIndex.fonts.find((font) => font.id === id);
-  const frame = frameIndex.groups.find((entry) => entry.sourceGroup === root.dataset.fontGroup);
+  const detailResponse = await fetch(`../fonts/font-detail-data/${id}.json`);
+  if (!detailResponse.ok) throw new Error(`Could not load detail data for ${id}`);
+  const pageData = await detailResponse.json();
+  const { sourceFont, modernFont, frame, comparisonGrid } = pageData;
   if (!sourceFont || !modernFont || !frame) throw new Error("Font data or source-group frame is missing.");
 
   const sourceSheet = root.querySelector(`[data-glyph-sheet="${id}"]`);
   const sourceStatus = root.querySelector(".font-glyph-status");
   const glyphs = modernFont.glyphs || [];
   const additions = new Map(modernFont.additions.map((entry) => [entry.character, entry]));
-
-  const allRows = sourceData.fonts.flatMap((font) => font.glyphs.flatMap((glyph) => glyph.rows || []));
-  const comparisonGrid = {
-    width: Math.max(1, ...allRows.map((row) => row.length)),
-    height: Math.max(1, ...sourceData.fonts.flatMap((font) => font.glyphs.map((glyph) => (glyph.rows || []).length))),
-  };
+  const rowsByCharacter = new Map(glyphs.map((glyph) => [glyph.character, glyph.rows]));
   const sourcePageRows = await matrixAt(`../fonts/${sourceFont.pageTxtFile}`);
   const sourcePage = matrixSvg(sourcePageRows, `${id} full unsplit chart TXT`, 1);
   sourcePage.classList.add("font-chart-original-svg");
   root.querySelector(`[data-chart-page="${id}"]`).append(sourcePage);
   const glyphByCharacter = new Map(glyphs.map((glyph) => [glyph.character, glyph]));
-  const overviewItems = await Promise.all(modernFont.targetCharacters.map(async (character) => {
+  const overviewItems = modernFont.targetCharacters.map((character) => {
     const glyph = glyphByCharacter.get(character);
     if (!glyph) return { character, missing: true };
-    const rows = await matrixAt(`../fonts/${glyph.txtFile}`);
+    const rows = rowsByCharacter.get(character);
     return { ...glyph, rows, added: additions.has(character) };
-  }));
+  });
   root.querySelector(`[data-chart-overview="${id}"]`).append(overviewSvg(overviewItems, comparisonGrid));
 
-  await renderGlyphs(sourceSheet, glyphs, sourceStatus, additions, comparisonGrid);
+  renderGlyphs(sourceSheet, glyphs, sourceStatus, rowsByCharacter, additions, comparisonGrid);
   appendMissingGlyphs(sourceSheet, modernFont.missingCharacters || []);
   sourceStatus.textContent = `${glyphs.length} available glyphs shown once; ${(modernFont.missingCharacters || []).length} missing characters use a teal rosette.`;
   const pageWidth = Math.max(1, ...sourcePageRows.map((row) => row.length));
-  addFrame(root.querySelector(".font-glyph-sheet-frame"), await matrixAt(`../${frame.matrixFile}`), frame.treatment, pageWidth);
+  addFrame(root.querySelector(".font-glyph-sheet-frame"), pageData.frameRows, frame.treatment, pageWidth);
 }
 
 main().catch((error) => {

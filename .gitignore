@@ -8,6 +8,8 @@ gallery/fonts/font-index.json
 gallery/fonts/modern-alt-index.json
 gallery/fonts/font-group-frames.json
 gallery/fonts/similarity-metrics.json
+gallery/fonts/font-detail-data/
+gallery/fonts/modern-alt-txt/*.json
 gallery/fonts/Sjonabok-fonts-*.zip
 gallery/*.quarto_ipynb
 gallery/*_files/

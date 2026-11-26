@@ -51,7 +51,7 @@ function updateNotes(note, text, sourceCharacters, altFont, modernMode) {
     const sharedCase = characters.filter((character) => !recorded.has(character) && sourceCharacters.has(character));
     const missing = characters.filter((character) => !sourceCharacters.has(character));
     if (sharedCase.length) {
-      note.append(element("small", "", `No separate case form in this chart: ${sharedCase.join(" ")} uses the matching chart glyph.`));
+      note.append(element("small", "", "Some letters share one chart form across upper and lower case."));
     }
     if (missing.length) {
       note.append(element("strong", "", "Not recorded in this chart:"));
@@ -69,7 +69,7 @@ function updateNotes(note, text, sourceCharacters, altFont, modernMode) {
   const otherAdditions = usedAdditions.filter((entry) => entry.method !== "source-chart-shared-case");
   const missing = characters.filter((character) => !altFont.characters.includes(character));
   if (sharedCaseAdditions.length) {
-    note.append(element("small", "", `No separate case form in this chart: ${[...new Set(sharedCaseAdditions.map((entry) => entry.character))].join(" ")} uses the matching chart glyph.`));
+    note.append(element("small", "", "Some letters share one chart form across upper and lower case."));
   }
   if (otherAdditions.length) {
     const addedCharacters = [...new Set(otherAdditions.map((entry) => entry.character))];
@@ -89,7 +89,10 @@ function updateNotes(note, text, sourceCharacters, altFont, modernMode) {
 function createCard(sourceFont, altFont, families) {
   const card = element("article", "font-card");
   const head = element("div", "font-card-head");
-  const heading = element("h2", "", sourceFont.name);
+  const heading = element("h2", "");
+  const headingLink = element("a", "font-card-title-link", sourceFont.name);
+  headingLink.href = `font-pages/${sourceFont.id}.html`;
+  heading.append(headingLink);
   head.append(heading);
 
   const body = element("div", "font-card-body");

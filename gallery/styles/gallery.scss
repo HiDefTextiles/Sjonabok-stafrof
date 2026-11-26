@@ -416,6 +416,8 @@ html.embedded {
 .font-card { min-width: 0; background: $hi-paper; border-top: 4px solid $hi-blue; padding: 0.8rem; }
 .font-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
 .font-card h2 { margin: 0; color: rgba($hi-blue, 0.62); font-size: 0.82rem; font-weight: 500; }
+.font-card-title-link { color: inherit; text-decoration-color: rgba($hi-blue, 0.3); text-underline-offset: 0.15em; }
+.font-card-title-link:hover, .font-card-title-link:focus { color: $hi-blue; text-decoration-color: currentColor; }
 .font-downloads { display: flex; gap: 0.75rem; font-size: 0.85rem; }
 .font-card-body { display: flex; flex-direction: column; gap: 0.35rem; align-items: stretch; margin-top: 0.45rem; }
 .font-preview {
