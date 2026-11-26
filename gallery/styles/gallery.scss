@@ -407,6 +407,7 @@ html.embedded {
     font: inherit;
     font-size: 1rem;
   }
+  textarea::placeholder { color: #777; opacity: 1; }
 }
 .font-control-row { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
 .font-control-row select { min-height: 2.5rem; padding: 0.3rem 0.55rem; }

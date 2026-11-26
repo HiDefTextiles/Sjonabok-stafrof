@@ -137,7 +137,10 @@ async function start() {
     return addFontFace(family, filename).catch(() => undefined);
   });
   const loadedResults = await Promise.allSettled(loadFaces);
-  const render = () => cards.forEach((card) => card.render(textInput.value, variantSelect.value));
+  const render = () => {
+    const sample = textInput.value || textInput.dataset.defaultSample || "";
+    cards.forEach((card) => card.render(sample, variantSelect.value));
+  };
   render();
   textInput.addEventListener("input", render);
   variantSelect.addEventListener("change", async () => {

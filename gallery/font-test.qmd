@@ -12,8 +12,7 @@ include-after-body:
 <p><a href="index.qmd">← Sjónabókarstafróf catalog</a> · <a href="font-families.qmd">Explore source groups and frames</a></p>
 <section class="font-controls" aria-labelledby="font-controls-title">
 <h2 id="font-controls-title">Your sample</h2>
-<label for="font-text">English pangram sample · uses all 26 letters</label>
-<textarea id="font-text" rows="2" maxlength="500">The quick brown fox jumps over the lazy dog</textarea>
+<textarea id="font-text" aria-label="Text to preview" data-default-sample="The quick brown fox jumps over the lazy dog" placeholder="The quick brown fox jumps over the lazy dog&#10;English pangram sample · uses all 26 letters — edit to your own text" rows="3" maxlength="500"></textarea>
 <div class="font-control-row">
 <label for="font-variant">Letter set</label>
 <select id="font-variant">
