@@ -2,7 +2,7 @@
 
 This folder contains 49 installable source-chart TrueType fonts, one for each Latin alphabet sheet in the chart data. A separate EPS page is Futhark and is not treated as a Latin alphabet font. No EPS files are included in this package.
 
-The per-glyph `.txt` matrices in `source-txt/<font-id>/` are the editable source of truth for the source-chart fonts. Each file is a 0/1 grid. The builder converts each filled cell to a square outline without cropping or rescaling the glyph, and then parses the resulting TTF and compares its outline commands with the grid. The current source set has 1,019 charted glyph matrices across 49 fonts. This is the Latin font set, not a claim that every component in the 50-page EPS inventory has been transcribed; the separate Futhark sheet and any unreconciled inventory entries remain outside this package.
+The per-glyph `.txt` matrices in `source-txt/<font-id>/` are the editable source of truth for the source-chart fonts. Each file is a 0/1 grid. The builder converts every filled cell to a square outline without rescaling or changing its shape. It removes only horizontal blank padding when positioning glyphs, then parses each TTF and checks the outline against the normalized TXT grid. The advance width leaves one blank pixel column after each glyph’s occupied bounds, so matrix padding cannot create unusually wide gaps. The current source set has 1,019 charted glyph matrices across 49 fonts. This is the Latin font set, not a claim that every component in the 50-page EPS inventory has been transcribed; the separate Futhark sheet and any unreconciled inventory entries remain outside this package.
 
 These are **drafts**. The character labels came from earlier manual splits and may be wrong. The editable character-to-chart mappings and source matrices are kept in `font-source.json` and `source-txt/` for review. Each source TTF maps only charted letters/numbers and same-chart case forms; unsupported characters are not mapped. The website marks them with a reusable rosette.
 
@@ -15,6 +15,10 @@ For a missing character, Alt may reuse the exact labeled glyph from another char
 Each font page compares two images: the original unsplit page matrix in `source-page-txt/<font-id>.txt`, converted from EPS, and a separate overview assembled from split glyph grids. On mobile these stack vertically; on wider screens they sit side by side. The YAML-selected manuscript border frames the unsplit page, with the lower repeat mirrored. EPS files are not included. Below the comparison, each glyph is shown once: blue for charted, teal for an added form, and a teal rosette for missing.
 
 Some chart labels remain unknown or uncertain, and the chart forms need visual review before the fonts should be considered final. The EPS files are source material and must not be committed to this repository.
+
+## Spacing and kerning
+
+The TXT grids define the exact glyph pixels. The builders pack glyphs to their occupied horizontal bounds and leave one blank pixel column between each pair. Horizontal blank padding in the source matrices does not affect spacing; no filled pixels are altered or rescaled. This is a mechanical grid rule, not optical tuning.
 
 ## Similarity metrics and research use
 

@@ -114,7 +114,18 @@ function rowsToRuns(rows) {
   return rects;
 }
 
+function trimHorizontalPadding(rows) {
+  let left = Infinity, right = -1;
+  rows.forEach((row) => [...row].forEach((value, x) => {
+    if (value === "1") { left = Math.min(left, x); right = Math.max(right, x); }
+  }));
+  if (right < left) return rows;
+  const width = right - left + 1;
+  return rows.map((row) => row.slice(left, right + 1).padEnd(width, "0"));
+}
+
 function pathFor(rows, cell, left = 0) {
+  rows = trimHorizontalPadding(rows);
   const pathData = new opentype.Path();
   for (const r of rowsToRuns(rows)) {
     const x0 = left + r.x0 * cell, x1 = left + r.x1 * cell;
@@ -248,7 +259,8 @@ function main() {
   }
   fs.writeFileSync(path.join(outputDir, "font-index.json"), JSON.stringify({
     status: source.reviewStatus || "draft",
-    cellGeometry: "one vector cell per 1 in the TXT grid; no crop or geometric resampling",
+    cellGeometry: "one vector cell per filled TXT pixel; horizontal blank padding is normalized; filled pixels are not rescaled",
+    spacingRule: "glyphs are packed to their occupied horizontal bounds with one blank pixel column between glyph bounds",
     fonts: index,
   }, null, 2));
   console.log(`Built ${index.length} TrueType fonts; verified ${verifiedGlyphCount} TTF glyph outlines against TXT grids.`);

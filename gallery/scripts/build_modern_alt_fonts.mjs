@@ -32,7 +32,18 @@ function rowsToRuns(rows) {
   return rectangles;
 }
 
+function trimHorizontalPadding(rows) {
+  let left = Infinity, right = -1;
+  rows.forEach((row) => [...row].forEach((value, x) => {
+    if (value === "1") { left = Math.min(left, x); right = Math.max(right, x); }
+  }));
+  if (right < left) return rows;
+  const width = right - left + 1;
+  return rows.map((row) => row.slice(left, right + 1).padEnd(width, "0"));
+}
+
 function glyphPath(rows, cell, left = 0) {
+  rows = trimHorizontalPadding(rows);
   const pathData = new opentype.Path();
   for (const r of rowsToRuns(rows)) {
     const x0 = left + r.x0 * cell, x1 = left + r.x1 * cell;
