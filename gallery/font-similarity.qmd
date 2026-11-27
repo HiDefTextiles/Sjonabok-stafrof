@@ -4,7 +4,7 @@ subtitle: "Find charts with similar lettering and see what each one contains"
 page-layout: full
 toc: false
 include-after-body:
-  - text: <script type="module" src="js/font-similarity.js"></script>
+  - text: <script type="module" src="js/font-similarity.js?v=2"></script>
 ---
 
 [← Font catalog](index.qmd) · [Test the fonts](font-test.qmd)
@@ -16,7 +16,7 @@ This page helps you spot repeated or similar chart lettering and check whether c
 <div id="similarity-overview" class="font-research-metrics" aria-label="Comparison summary"></div>
 
 <section aria-labelledby="close-pages-heading">
-<h2 id="close-pages-heading">Compare similar charts</h2>
+<h2 id="close-pages-heading">Compare charts</h2>
 <p>Choose any two charts to compare their glyphs in matching rows. Each side uses that chart’s original Org font; a teal rosette marks a character the chart does not contain.</p>
 <div class="font-compare-controls">
 <div class="font-compare-control">
