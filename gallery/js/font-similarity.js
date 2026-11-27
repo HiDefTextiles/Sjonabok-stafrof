@@ -71,12 +71,21 @@ function renderGlyphCell(font, characters) {
   return cell;
 }
 
-function renderPair(pair, fontsById, coverageById) {
+function renderPair(leftId, rightId, report, fontsById, coverageById) {
   const root = document.querySelector("#selected-pair-grid");
   const note = document.querySelector("#selected-pair-note");
-  const left = fontsById.get(pair.left), right = fontsById.get(pair.right);
-  const leftMap = glyphMap(coverageById.get(pair.left));
-  const rightMap = glyphMap(coverageById.get(pair.right));
+  const left = fontsById.get(leftId), right = fontsById.get(rightId);
+  if (leftId === rightId) {
+    note.textContent = "Choose two different charts to compare.";
+    root.replaceChildren();
+    return;
+  }
+  const pair = report.pagePairs.find((item) =>
+    (item.left === leftId && item.right === rightId) || (item.left === rightId && item.right === leftId));
+  installFontFace(left);
+  installFontFace(right);
+  const leftMap = glyphMap(coverageById.get(leftId));
+  const rightMap = glyphMap(coverageById.get(rightId));
   const labels = [...new Set([...leftMap.keys(), ...rightMap.keys()])].sort(compareKeys);
   const filter = document.querySelector("#glyph-filter").value;
   const sharedCount = labels.filter((label) => leftMap.has(label) && rightMap.has(label)).length;
@@ -86,9 +95,12 @@ function renderPair(pair, fontsById, coverageById) {
     if (filter === "different") return !shared;
     return true;
   });
+  const scoreNote = pair
+    ? `Similarity screen: ${Math.round(pair.score * 100)}% across ${pair.sharedLetters.length} shared letters. This score is exploratory; inspect the glyphs and source pages before treating charts as a family.`
+    : "No similarity score is shown because these charts share fewer than three recorded letters.";
   note.replaceChildren(
     linkFor(left, chartLabel(left)), el("span", "font-pair-separator", "and"), linkFor(right, chartLabel(right)),
-    el("p", "", `${sharedCount} character labels appear on both charts. Similarity screen: ${Math.round(pair.score * 100)}% across ${pair.sharedLetters.length} shared letters. This score is exploratory; inspect the glyphs and source pages before treating charts as a family.`),
+    el("p", "", `${sharedCount} character labels appear on both charts. ${scoreNote}`),
   );
   root.replaceChildren();
   const header = el("div", "font-glyph-row is-header");
@@ -165,27 +177,31 @@ async function main() {
   const [report, index] = await Promise.all([reportResponse.json(), indexResponse.json()]);
   const fontsById = new Map(index.fonts.map((font) => [font.id, font]));
   const coverageById = new Map(report.chartCoverage.map((chart) => [chart.id, chart]));
-  const pairs = report.closePagePairScreen.pairs;
   const summary = document.querySelector("#similarity-overview");
-  summary.replaceChildren(el("p", "", `${report.dataset.sourceFontCount} charts compared · ${pairs.length} closest pairs available`));
-  const selector = document.querySelector("#similar-chart-pair");
-  for (const pair of pairs) {
-    const left = fontsById.get(pair.left), right = fontsById.get(pair.right);
-    const option = el("option", "", `${chartLabel(left)} ↔ ${chartLabel(right)}`);
-    option.value = `${pair.left}|${pair.right}`;
-    selector.append(option);
+  summary.replaceChildren(el("p", "", `${report.dataset.sourceFontCount} charts available to compare · choose any two below`));
+  const leftSelect = document.querySelector("#chart-left");
+  const rightSelect = document.querySelector("#chart-right");
+  for (const chart of report.chartCoverage) {
+    const font = fontsById.get(chart.id);
+    for (const selector of [leftSelect, rightSelect]) {
+      const option = el("option", "", chartLabel(font));
+      option.value = chart.id;
+      selector.append(option);
+    }
   }
+  const bestPair = report.closePagePairScreen.pairs[0];
+  leftSelect.value = bestPair?.left || report.chartCoverage[0].id;
+  rightSelect.value = bestPair?.right || report.chartCoverage.find((chart) => chart.id !== leftSelect.value).id;
   const update = () => {
-    const [left, right] = selector.value.split("|");
-    const pair = pairs.find((item) => item.left === left && item.right === right);
-    if (pair) renderPair(pair, fontsById, coverageById);
+    renderPair(leftSelect.value, rightSelect.value, report, fontsById, coverageById);
   };
-  selector.addEventListener("change", update);
+  leftSelect.addEventListener("change", update);
+  rightSelect.addEventListener("change", update);
   document.querySelector("#glyph-filter").addEventListener("change", update);
-  if (pairs.length) update();
+  if (report.chartCoverage.length > 1) update();
   renderCoverage(report, fontsById);
   renderRepeats(report, fontsById);
-  status.textContent = `${report.dataset.sourceFontCount} chart pages compared. Choose a pair to compare their glyphs.`;
+  status.textContent = `${report.dataset.sourceFontCount} chart pages available. Choose any two charts to compare their glyphs.`;
 }
 
 main().catch((error) => { status.textContent = `Chart comparisons could not be loaded: ${error.message}`; });

@@ -125,6 +125,7 @@ function stats(records) {
   return { pairCount: scores.length, mean: Number(mean.toFixed(4)), median: median === null ? null : Number(median.toFixed(4)), min: scores.length ? Number(scores[0].toFixed(4)) : null, max: scores.length ? Number(scores.at(-1).toFixed(4)) : null };
 }
 const within = pairs.filter((pair) => pair.sameManuscript), across = pairs.filter((pair) => !pair.sameManuscript);
+const rankedPairs = [...pairs].sort((a, b) => b.score - a.score).map((pair) => ({ ...pair, score: Number(pair.score.toFixed(4)) }));
 const byManuscript = [...new Set(fonts.map((font) => group(font.id)))].sort().map((id) => {
   const records = within.filter((pair) => group(pair.left) === id);
   return { id, pageCount: fonts.filter((font) => group(font.id) === id).length, ...stats(records) };
@@ -136,6 +137,7 @@ const report = {
   method: { representation: "Each source glyph is cropped to its nonempty bounds, scaled proportionally to fit an 18×18 binary grid, and centered.", metric: "For each shared labelled letter, binary Jaccard = shared filled cells / cells filled in either glyph. Pair score is the unweighted mean across shared letters.", comparisons: "Within-source-ID-group pairs share the prefix before the final numeric page suffix. Across-group pairs have different prefixes. These labels organize the current dataset and do not establish historical manuscript or typeface families. A page pair is included only when at least 3 labelled letters are shared.", limitations: "Scores depend on transcription labels, thresholded stitch cells, normalization, and small uneven letter samples. They ignore color, stitch texture, spacing, layout, and manuscript dating. Similarity is descriptive, not proof of a shared hand or influence." },
   overall: { withinManuscript: stats(within), acrossManuscripts: stats(across) },
   withinManuscript: byManuscript,
+  pagePairs: rankedPairs,
   chartCoverage,
   exactLetterShapeSummary: exactShapeSummary,
   exactShapeGroups: repeatedShapeGroups.sort((a, b) => b.fontIds.length - a.fontIds.length || a.character.localeCompare(b.character, "is")),
@@ -144,7 +146,7 @@ const report = {
   closeGlyphMatchScreen: { threshold: 0.9, note: "Exploratory screen, not a validated cutoff.", matchCount: closeGlyphMatches.length, withinManuscriptCount: closeGlyphMatches.filter((match) => match.sameManuscript).length, acrossManuscriptCount: closeGlyphMatches.filter((match) => !match.sameManuscript).length, matches: closeGlyphMatches.sort((a, b) => b.score - a.score).slice(0, 40) },
   closePagePairScreen: { threshold: 0.85, note: "Exploratory screen, not a validated cutoff.", pairs: pairs.filter((pair) => pair.score >= 0.85).sort((a, b) => b.score - a.score).map((pair) => ({ ...pair, score: Number(pair.score.toFixed(4)) })) },
   closestWithinManuscriptPairs: [...within].sort((a, b) => b.score - a.score).slice(0, 15).map((pair) => ({ ...pair, score: Number(pair.score.toFixed(4)) })),
-  highestPairs: [...pairs].sort((a, b) => b.score - a.score).slice(0, 20).map((pair) => ({ ...pair, score: Number(pair.score.toFixed(4)) })),
+  highestPairs: rankedPairs.slice(0, 20),
   lowestPairs: [...pairs].sort((a, b) => a.score - b.score).slice(0, 20).map((pair) => ({ ...pair, score: Number(pair.score.toFixed(4)) })),
 };
 fs.writeFileSync(path.join(fontDir, "similarity-metrics.json"), JSON.stringify(report, null, 2));

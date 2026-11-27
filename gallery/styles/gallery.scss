@@ -500,7 +500,8 @@ svg.font-chart-original-svg { display: block; width: 100%; max-width: 870px; hei
 .font-research-table th, .font-research-table td { padding: 0.45rem 0.55rem; border-bottom: 1px solid rgba($hi-blue, 0.18); text-align: left; vertical-align: top; }
 .font-research-table th { color: $hi-blue; white-space: nowrap; }
 .font-research-empty { color: rgba($hi-blue, 0.7); font-size: 0.88rem; }
-.font-compare-controls { display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 0.5rem 0.8rem; align-items: center; max-width: 54rem; margin: 0.8rem 0; }
+.font-compare-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; max-width: 64rem; margin: 0.8rem 0; }
+.font-compare-control { display: flex; min-width: 0; flex-direction: column; gap: 0.2rem; }
 .font-pair-separator { margin: 0 0.45rem; color: rgba($hi-blue, 0.65); }
 .font-glyph-comparison { margin: 1rem 0 2rem; border-top: 2px solid $hi-blue; }
 .font-glyph-row { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) minmax(0, 1fr); border-bottom: 1px solid rgba($hi-blue, 0.2); }
@@ -524,7 +525,7 @@ svg.font-chart-original-svg { display: block; width: 100%; max-width: 870px; hei
 .font-coverage-card p { margin: 0.35rem 0 0; font-size: 0.82rem; line-height: 1.4; overflow-wrap: anywhere; }
 
 @media (max-width: 640px) {
-  .font-compare-controls { grid-template-columns: 1fr; gap: 0.25rem; }
+  .font-compare-controls { grid-template-columns: 1fr; gap: 0.55rem; }
   .font-glyph-row { grid-template-columns: 2.4rem minmax(0, 1fr) minmax(0, 1fr); }
   .font-glyph-row.is-header { font-size: 0.72rem; }
   .font-glyph-row.is-header a { padding: 0 0.3rem; }

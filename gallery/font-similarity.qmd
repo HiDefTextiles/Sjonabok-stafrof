@@ -17,16 +17,24 @@ This page helps you spot repeated or similar chart lettering and check whether c
 
 <section aria-labelledby="close-pages-heading">
 <h2 id="close-pages-heading">Compare similar charts</h2>
-<p>Choose two similar charts to compare their glyphs in matching rows. Each side uses that chart’s original Org font; a teal rosette marks a character the chart does not contain.</p>
+<p>Choose any two charts to compare their glyphs in matching rows. Each side uses that chart’s original Org font; a teal rosette marks a character the chart does not contain.</p>
 <div class="font-compare-controls">
-<label for="similar-chart-pair">Compare charts</label>
-<select id="similar-chart-pair" class="form-select"></select>
+<div class="font-compare-control">
+<label for="chart-left">Chart A</label>
+<select id="chart-left" class="form-select"></select>
+</div>
+<div class="font-compare-control">
+<label for="chart-right">Chart B</label>
+<select id="chart-right" class="form-select"></select>
+</div>
+<div class="font-compare-control">
 <label for="glyph-filter">Show</label>
 <select id="glyph-filter" class="form-select">
 <option value="all">All characters</option>
 <option value="shared">Shared characters</option>
 <option value="different">Different coverage</option>
 </select>
+</div>
 </div>
 <div id="selected-pair-note" class="font-source-note"></div>
 <div id="selected-pair-grid" class="font-glyph-comparison" aria-live="polite"></div>
