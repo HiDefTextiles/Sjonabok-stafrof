@@ -34,6 +34,12 @@ include-after-body:
 These are experimental fonts made from the book’s chart patterns. The chart labels are transcriptions and may need correction. The Futhark page is kept separate from the Latin-letter fonts; some of its runes are not yet identified.
 :::
 
+## How the downloadable fonts are made {#how-the-fonts-are-made}
+
+Each square in a TXT chart is one square in the font. The font builder keeps the filled squares as they are. It ignores blank columns around a letter, then leaves one blank square between neighboring letters so uneven margins in the chart files do not make some pairs look far apart. The builder checks the finished font shapes against the TXT charts.
+
+**Org** uses the letters or numbers shown on that chart. **Alt** starts with the same chart and may fill a gap only with a matching glyph from another chart in the same manuscript. If no suitable match exists, that character stays missing. The colored marks on each chart page show which glyphs came from the page and which were added.
+
 ## How similar are the source charts?
 
 We compare the shapes of source glyphs that have the same transcribed letter label. Each glyph is cropped to its filled cells, scaled proportionally into an 18 × 18 binary grid, then centered. For each shared letter, similarity is the Jaccard score: the number of cells filled in both shapes divided by the number filled in either. A page-pair score is the unweighted average across its shared letters. Pairs with fewer than three shared labelled letters are excluded.
