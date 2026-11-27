@@ -19,17 +19,6 @@ function chartLabel(font) {
   return font.name.replace(/^Sjónabók\s+/u, "");
 }
 
-function installFontFace(font) {
-  const id = `chart-font-${font.id}`;
-  const family = `Chart ${font.id.replace(/[^a-z0-9]/giu, "-")}`;
-  font.cssFamily = family;
-  if (document.getElementById(id)) return;
-  const style = document.createElement("style");
-  style.id = id;
-  style.textContent = `@font-face{font-family:"${family}";src:url("fonts/${font.filename}") format("truetype");font-display:swap}`;
-  document.head.append(style);
-}
-
 function canonical(character) {
   return character.toLocaleUpperCase("is");
 }
@@ -40,19 +29,57 @@ function compareKeys(left, right) {
   return rank || left.localeCompare(right, "is", { numeric: true });
 }
 
-function glyphMap(coverage) {
+function glyphMap(detail) {
   const map = new Map();
-  for (const character of [...coverage.letterLabels, ...coverage.numberLabels]) {
+  const originalCharacters = new Set(detail.modernFont.sourceCharacters);
+  for (const glyph of detail.modernFont.glyphs) {
+    const character = glyph.character;
+    if (!originalCharacters.has(character)) continue;
     const key = canonical(character);
     if (!map.has(key)) map.set(key, []);
-    map.get(key).push(character);
+    map.get(key).push({ character, rows: glyph.rows });
   }
   return map;
 }
 
-function renderGlyphCell(font, characters) {
-  const cell = el("div", `font-glyph-cell${characters.length ? "" : " is-missing"}`);
-  if (!characters.length) {
+function matrixSvg(glyph, grid) {
+  const pixel = 5, width = grid.width * pixel, height = grid.height * pixel;
+  const glyphWidth = Math.max(1, ...glyph.rows.map((row) => row.length));
+  const glyphHeight = glyph.rows.length;
+  const left = Math.floor((grid.width - glyphWidth) / 2) * pixel;
+  const top = (grid.height - glyphHeight) * pixel;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", `TXT glyph ${glyph.character}`);
+  svg.classList.add("font-glyph-svg");
+  for (let y = 5; y < grid.height; y += 5) {
+    const guide = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    guide.setAttribute("x1", "0"); guide.setAttribute("x2", String(width));
+    guide.setAttribute("y1", String(y * pixel)); guide.setAttribute("y2", String(y * pixel));
+    guide.classList.add("font-glyph-guide");
+    svg.append(guide);
+  }
+  glyph.rows.forEach((row, y) => [...row].forEach((bit, x) => {
+    if (bit !== "1") return;
+    const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    rect.setAttribute("x", String(left + x * pixel));
+    rect.setAttribute("y", String(top + y * pixel));
+    rect.setAttribute("width", String(pixel)); rect.setAttribute("height", String(pixel));
+    rect.classList.add("font-glyph-pixel");
+    svg.append(rect);
+  }));
+  const baseline = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  baseline.setAttribute("x1", "0"); baseline.setAttribute("x2", String(width));
+  baseline.setAttribute("y1", String(height - 1)); baseline.setAttribute("y2", String(height - 1));
+  baseline.classList.add("font-glyph-baseline");
+  svg.append(baseline);
+  return svg;
+}
+
+function renderGlyphCell(glyphs, grid) {
+  const cell = el("div", `font-glyph-cell${glyphs.length ? "" : " is-missing"}`);
+  if (!glyphs.length) {
     const mark = el("img", "font-missing-rosette");
     mark.src = "img/rosette-missing.svg";
     mark.alt = "Not charted";
@@ -60,18 +87,26 @@ function renderGlyphCell(font, characters) {
     cell.append(mark, el("small", "", "Not charted"));
     return cell;
   }
-  for (const character of characters) {
-    const glyph = el("span", "font-glyph-shape", character);
-    glyph.style.fontFamily = `"${font.cssFamily}"`;
-    glyph.setAttribute("aria-label", `${character}, from ${chartLabel(font)}`);
-    cell.append(glyph);
-  }
-  const caption = characters.length > 1 ? characters.join(" · ") : `Chart label: ${characters[0]}`;
+  for (const glyph of glyphs) cell.append(matrixSvg(glyph, grid));
+  const caption = glyphs.length > 1 ? glyphs.map((glyph) => glyph.character).join(" · ") : `Chart label: ${glyphs[0].character}`;
   cell.append(el("small", "", caption));
   return cell;
 }
 
-function renderPair(leftId, rightId, report, fontsById, coverageById) {
+const detailCache = new Map();
+async function loadDetail(id) {
+  if (!detailCache.has(id)) {
+    detailCache.set(id, fetch(`fonts/font-detail-data/${id}.json`).then((response) => {
+      if (!response.ok) throw new Error(`TXT glyph data for ${id} could not be loaded.`);
+      return response.json();
+    }));
+  }
+  return detailCache.get(id);
+}
+
+let renderVersion = 0;
+async function renderPair(leftId, rightId, report, fontsById) {
+  const version = ++renderVersion;
   const root = document.querySelector("#selected-pair-grid");
   const note = document.querySelector("#selected-pair-note");
   const left = fontsById.get(leftId), right = fontsById.get(rightId);
@@ -82,10 +117,17 @@ function renderPair(leftId, rightId, report, fontsById, coverageById) {
   }
   const pair = report.pagePairs.find((item) =>
     (item.left === leftId && item.right === rightId) || (item.left === rightId && item.right === leftId));
-  installFontFace(left);
-  installFontFace(right);
-  const leftMap = glyphMap(coverageById.get(leftId));
-  const rightMap = glyphMap(coverageById.get(rightId));
+  root.replaceChildren(el("p", "font-research-empty", "Loading the two TXT glyph charts…"));
+  let leftDetail, rightDetail;
+  try {
+    [leftDetail, rightDetail] = await Promise.all([loadDetail(leftId), loadDetail(rightId)]);
+  } catch (error) {
+    if (version === renderVersion) root.replaceChildren(el("p", "font-research-empty", error.message));
+    return;
+  }
+  if (version !== renderVersion) return;
+  const leftMap = glyphMap(leftDetail);
+  const rightMap = glyphMap(rightDetail);
   const labels = [...new Set([...leftMap.keys(), ...rightMap.keys()])].sort(compareKeys);
   const filter = document.querySelector("#glyph-filter").value;
   const sharedCount = labels.filter((label) => leftMap.has(label) && rightMap.has(label)).length;
@@ -110,8 +152,8 @@ function renderPair(leftId, rightId, report, fontsById, coverageById) {
     const row = el("div", `font-glyph-row${leftMap.has(label) && rightMap.has(label) ? " is-shared" : " is-one-sided"}`);
     row.append(
       el("strong", "font-glyph-label", label),
-      renderGlyphCell(left, leftMap.get(label) || []),
-      renderGlyphCell(right, rightMap.get(label) || []),
+      renderGlyphCell(leftMap.get(label) || [], leftDetail.comparisonGrid),
+      renderGlyphCell(rightMap.get(label) || [], rightDetail.comparisonGrid),
     );
     root.append(row);
   }
@@ -176,7 +218,6 @@ async function main() {
   if (!reportResponse.ok || !indexResponse.ok) throw new Error("Chart comparison data could not be loaded.");
   const [report, index] = await Promise.all([reportResponse.json(), indexResponse.json()]);
   const fontsById = new Map(index.fonts.map((font) => [font.id, font]));
-  const coverageById = new Map(report.chartCoverage.map((chart) => [chart.id, chart]));
   const summary = document.querySelector("#similarity-overview");
   summary.replaceChildren(el("p", "", `${report.dataset.sourceFontCount} charts available to compare · choose any two below`));
   const leftSelect = document.querySelector("#chart-left");
@@ -193,7 +234,7 @@ async function main() {
   leftSelect.value = bestPair?.left || report.chartCoverage[0].id;
   rightSelect.value = bestPair?.right || report.chartCoverage.find((chart) => chart.id !== leftSelect.value).id;
   const update = () => {
-    renderPair(leftSelect.value, rightSelect.value, report, fontsById, coverageById);
+    renderPair(leftSelect.value, rightSelect.value, report, fontsById);
   };
   leftSelect.addEventListener("change", update);
   rightSelect.addEventListener("change", update);
