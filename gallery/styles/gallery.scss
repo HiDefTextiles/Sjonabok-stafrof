@@ -500,14 +500,19 @@ svg.font-chart-original-svg { display: block; width: 100%; max-width: 870px; hei
 .font-research-table th, .font-research-table td { padding: 0.45rem 0.55rem; border-bottom: 1px solid rgba($hi-blue, 0.18); text-align: left; vertical-align: top; }
 .font-research-table th { color: $hi-blue; white-space: nowrap; }
 .font-research-empty { color: rgba($hi-blue, 0.7); font-size: 0.88rem; }
-.font-similarity-pairs { display: grid; grid-template-columns: 1fr; gap: 0.8rem; }
-.font-similarity-pairs select { max-width: 100%; }
+.font-compare-controls { display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 0.5rem 0.8rem; align-items: center; max-width: 54rem; margin: 0.8rem 0; }
 .font-pair-separator { margin: 0 0.45rem; color: rgba($hi-blue, 0.65); }
-.font-glyph-cloud { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 0.35rem; margin: 1rem 0 2rem; padding: 0.8rem; border: 1px solid rgba($hi-blue, 0.2); background: white; }
-.font-glyph-sample { display: inline-flex; flex-direction: column; align-items: center; justify-content: end; min-width: 3.2rem; padding: 0.3rem; text-align: center; }
-.font-glyph-shape { color: $hi-blue; font-size: clamp(2.6rem, 7vw, 5rem); line-height: 1.15; }
-.font-glyph-sample.is-unique .font-glyph-shape { font-size: clamp(1.8rem, 4vw, 3rem); }
-.font-glyph-sample small { max-width: 8rem; margin-top: 0.3rem; color: rgba($hi-blue, 0.68); font-size: 0.63rem; line-height: 1.2; }
+.font-glyph-comparison { margin: 1rem 0 2rem; border-top: 2px solid $hi-blue; }
+.font-glyph-row { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr) minmax(0, 1fr); border-bottom: 1px solid rgba($hi-blue, 0.2); }
+.font-glyph-row:nth-child(odd):not(.is-header) { background: $hi-paper; }
+.font-glyph-row.is-header { position: sticky; top: 0; z-index: 1; padding: 0.65rem 0; background: white; font-size: 0.88rem; }
+.font-glyph-row.is-header a { padding: 0 0.6rem; font-weight: 700; overflow-wrap: anywhere; }
+.font-glyph-label { display: flex; align-items: center; justify-content: center; color: $hi-blue; font-size: 1.1rem; }
+.font-glyph-cell { display: flex; min-width: 0; min-height: 5rem; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.35rem; padding: 0.35rem; border-left: 1px solid rgba($hi-blue, 0.14); text-align: center; }
+.font-glyph-shape { color: $hi-blue; font-size: 3rem; line-height: 1.2; }
+.font-glyph-cell small { flex-basis: 100%; color: rgba($hi-blue, 0.68); font-size: 0.68rem; line-height: 1.2; }
+.font-glyph-cell.is-missing { background: rgba($hi-teal, 0.035); }
+.font-glyph-cell .font-missing-rosette { width: 1.5rem; height: 1.5rem; margin: 0; }
 .font-repeat-list { columns: 2; padding-left: 1.2rem; }
 .font-repeat-list li { break-inside: avoid; margin-bottom: 0.3rem; }
 .font-method-details { margin-top: 1.5rem; padding: 0.8rem; border-top: 1px solid rgba($hi-blue, 0.22); }
@@ -519,6 +524,12 @@ svg.font-chart-original-svg { display: block; width: 100%; max-width: 870px; hei
 .font-coverage-card p { margin: 0.35rem 0 0; font-size: 0.82rem; line-height: 1.4; overflow-wrap: anywhere; }
 
 @media (max-width: 640px) {
+  .font-compare-controls { grid-template-columns: 1fr; gap: 0.25rem; }
+  .font-glyph-row { grid-template-columns: 2.4rem minmax(0, 1fr) minmax(0, 1fr); }
+  .font-glyph-row.is-header { font-size: 0.72rem; }
+  .font-glyph-row.is-header a { padding: 0 0.3rem; }
+  .font-glyph-cell { min-height: 4.4rem; padding: 0.25rem; }
+  .font-glyph-shape { font-size: 2.4rem; }
   .font-repeat-list { columns: 1; }
   .font-page-comparison { grid-template-columns: 1fr; }
   .font-page-divider { width: 100%; height: 3px; }

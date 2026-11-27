@@ -1,4 +1,6 @@
 const status = document.querySelector("#similarity-page-status");
+const alphabetOrder = [..."AÁBCDÐEÉFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ"];
+const characterRank = new Map(alphabetOrder.map((character, index) => [character, index]));
 
 function el(tag, className, value) {
   const node = document.createElement(tag);
@@ -19,45 +21,90 @@ function chartLabel(font) {
 
 function installFontFace(font) {
   const id = `chart-font-${font.id}`;
+  const family = `Chart ${font.id.replace(/[^a-z0-9]/giu, "-")}`;
+  font.cssFamily = family;
   if (document.getElementById(id)) return;
   const style = document.createElement("style");
   style.id = id;
-  const family = `Chart ${font.id.replace(/[^a-z0-9]/giu, "-")}`;
   style.textContent = `@font-face{font-family:"${family}";src:url("fonts/${font.filename}") format("truetype");font-display:swap}`;
   document.head.append(style);
-  font.cssFamily = family;
+}
+
+function canonical(character) {
+  return character.toLocaleUpperCase("is");
+}
+
+function compareKeys(left, right) {
+  const leftChar = canonical(left), rightChar = canonical(right);
+  const rank = (characterRank.get(leftChar) ?? 999) - (characterRank.get(rightChar) ?? 999);
+  return rank || left.localeCompare(right, "is", { numeric: true });
+}
+
+function glyphMap(coverage) {
+  const map = new Map();
+  for (const character of [...coverage.letterLabels, ...coverage.numberLabels]) {
+    const key = canonical(character);
+    if (!map.has(key)) map.set(key, []);
+    map.get(key).push(character);
+  }
+  return map;
+}
+
+function renderGlyphCell(font, characters) {
+  const cell = el("div", `font-glyph-cell${characters.length ? "" : " is-missing"}`);
+  if (!characters.length) {
+    const mark = el("img", "font-missing-rosette");
+    mark.src = "img/rosette-missing.svg";
+    mark.alt = "Not charted";
+    mark.title = "This character is not recorded on this chart";
+    cell.append(mark, el("small", "", "Not charted"));
+    return cell;
+  }
+  for (const character of characters) {
+    const glyph = el("span", "font-glyph-shape", character);
+    glyph.style.fontFamily = `"${font.cssFamily}"`;
+    glyph.setAttribute("aria-label", `${character}, from ${chartLabel(font)}`);
+    cell.append(glyph);
+  }
+  const caption = characters.length > 1 ? characters.join(" · ") : `Chart label: ${characters[0]}`;
+  cell.append(el("small", "", caption));
+  return cell;
 }
 
 function renderPair(pair, fontsById, coverageById) {
-  const root = document.querySelector("#selected-pair-cloud");
+  const root = document.querySelector("#selected-pair-grid");
   const note = document.querySelector("#selected-pair-note");
   const left = fontsById.get(pair.left), right = fontsById.get(pair.right);
-  const leftCoverage = coverageById.get(pair.left), rightCoverage = coverageById.get(pair.right);
-  if (!left || !right || !leftCoverage || !rightCoverage) return;
-  installFontFace(left); installFontFace(right);
-  const rightLabels = new Set([...rightCoverage.letterLabels, ...rightCoverage.numberLabels].map((character) => character.toLocaleUpperCase("is")));
-  const leftLabels = new Set([...leftCoverage.letterLabels, ...leftCoverage.numberLabels].map((character) => character.toLocaleUpperCase("is")));
-  const sharedLabels = new Set([...leftLabels].filter((character) => rightLabels.has(character)));
+  const leftMap = glyphMap(coverageById.get(pair.left));
+  const rightMap = glyphMap(coverageById.get(pair.right));
+  const labels = [...new Set([...leftMap.keys(), ...rightMap.keys()])].sort(compareKeys);
+  const filter = document.querySelector("#glyph-filter").value;
+  const sharedCount = labels.filter((label) => leftMap.has(label) && rightMap.has(label)).length;
+  const rows = labels.filter((label) => {
+    const shared = leftMap.has(label) && rightMap.has(label);
+    if (filter === "shared") return shared;
+    if (filter === "different") return !shared;
+    return true;
+  });
   note.replaceChildren(
     linkFor(left, chartLabel(left)), el("span", "font-pair-separator", "and"), linkFor(right, chartLabel(right)),
-    el("p", "", `${sharedLabels.size} shared character labels · similarity screen ${Math.round(pair.score * 100)}% across ${pair.sharedLetters.length} letters. This score is a visual comparison aid, not proof that the charts are one family.`),
+    el("p", "", `${sharedCount} character labels appear on both charts. Similarity screen: ${Math.round(pair.score * 100)}% across ${pair.sharedLetters.length} shared letters. This score is exploratory; inspect the glyphs and source pages before treating charts as a family.`),
   );
   root.replaceChildren();
-  const samples = [];
-  for (const [font, coverage] of [[left, leftCoverage], [right, rightCoverage]]) {
-    const labels = [...coverage.letterLabels, ...coverage.numberLabels];
-    for (const character of labels) samples.push({ font, character, shared: sharedLabels.has(character.toLocaleUpperCase("is")) });
+  const header = el("div", "font-glyph-row is-header");
+  header.append(el("strong", "font-glyph-label", "Character"), linkFor(left, chartLabel(left)), linkFor(right, chartLabel(right)));
+  root.append(header);
+  for (const label of rows) {
+    const row = el("div", `font-glyph-row${leftMap.has(label) && rightMap.has(label) ? " is-shared" : " is-one-sided"}`);
+    row.append(
+      el("strong", "font-glyph-label", label),
+      renderGlyphCell(left, leftMap.get(label) || []),
+      renderGlyphCell(right, rightMap.get(label) || []),
+    );
+    root.append(row);
   }
-  samples.sort((a, b) => a.character.localeCompare(b.character, "is") || a.font.id.localeCompare(b.font.id));
-  for (const sample of samples) {
-    const item = el("div", `font-glyph-sample${sample.shared ? " is-shared" : " is-unique"}`);
-    const glyph = el("span", "font-glyph-shape", sample.character);
-    glyph.style.fontFamily = `"${sample.font.cssFamily}"`;
-    glyph.setAttribute("aria-label", `${sample.character}, ${chartLabel(sample.font)}`);
-    item.append(glyph, el("small", "", chartLabel(sample.font)));
-    root.append(item);
-  }
-  root.setAttribute("aria-label", `Glyph comparison for ${chartLabel(left)} and ${chartLabel(right)}`);
+  if (!rows.length) root.append(el("p", "font-research-empty", "No characters match this filter."));
+  root.setAttribute("aria-label", `Aligned glyph comparison for ${chartLabel(left)} and ${chartLabel(right)}`);
 }
 
 function renderCoverage(report, fontsById) {
@@ -67,7 +114,7 @@ function renderCoverage(report, fontsById) {
     if (!groups.has(chart.manuscriptGroup)) groups.set(chart.manuscriptGroup, []);
     groups.get(chart.manuscriptGroup).push(chart);
   }
-  for (const [groupId, charts] of groups) {
+  for (const [, charts] of groups) {
     const details = el("details", "font-coverage-group");
     const firstFont = fontsById.get(charts[0].id);
     const friendlyGroupName = chartLabel(firstFont).replace(/\s+\d+$/u, "");
@@ -119,12 +166,8 @@ async function main() {
   const fontsById = new Map(index.fonts.map((font) => [font.id, font]));
   const coverageById = new Map(report.chartCoverage.map((chart) => [chart.id, chart]));
   const pairs = report.closePagePairScreen.pairs;
-  const overview = document.querySelector("#similarity-overview");
-  overview.append(
-    el("div", "font-research-metric", `${report.dataset.sourceFontCount} chart pages compared`),
-    el("div", "font-research-metric", `${pairs.length} close chart pairs to explore`),
-    el("div", "font-research-metric", `${report.exactLetterShapeSummary.matchingGlyphPairCount} exact matching letter pairs`),
-  );
+  const summary = document.querySelector("#similarity-overview");
+  summary.replaceChildren(el("p", "", `${report.dataset.sourceFontCount} charts compared · ${pairs.length} closest pairs available`));
   const selector = document.querySelector("#similar-chart-pair");
   for (const pair of pairs) {
     const left = fontsById.get(pair.left), right = fontsById.get(pair.right);
@@ -138,10 +181,11 @@ async function main() {
     if (pair) renderPair(pair, fontsById, coverageById);
   };
   selector.addEventListener("change", update);
+  document.querySelector("#glyph-filter").addEventListener("change", update);
   if (pairs.length) update();
   renderCoverage(report, fontsById);
   renderRepeats(report, fontsById);
-  status.textContent = `${report.dataset.sourceFontCount} chart pages compared. Choose a close pair above to explore its glyphs.`;
+  status.textContent = `${report.dataset.sourceFontCount} chart pages compared. Choose a pair to compare their glyphs.`;
 }
 
 main().catch((error) => { status.textContent = `Chart comparisons could not be loaded: ${error.message}`; });
