@@ -1,4 +1,5 @@
 const textInput = document.querySelector("#font-text");
+const pangramLabel = document.querySelector("#font-pangram-label");
 const variantSelect = document.querySelector("#font-variant");
 const grid = document.querySelector("#font-grid");
 const status = document.querySelector("#font-status");
@@ -139,6 +140,7 @@ async function start() {
   const loadedResults = await Promise.allSettled(loadFaces);
   const render = () => {
     const sample = textInput.value || textInput.dataset.defaultSample || "";
+    pangramLabel.hidden = textInput.value.length > 0;
     cards.forEach((card) => card.render(sample, variantSelect.value));
   };
   render();
