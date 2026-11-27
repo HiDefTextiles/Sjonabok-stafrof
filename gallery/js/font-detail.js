@@ -282,6 +282,20 @@ function appendMissingGlyphs(sheet, missingCharacters) {
   }
 }
 
+function appendUnmappedGlyphs(sheet, unmappedGlyphs, comparisonGrid) {
+  for (const glyph of unmappedGlyphs) {
+    const tile = make("article", "font-matrix-card font-unmapped-card");
+    tile.append(make("h3", "font-matrix-label", glyph.label || "Unidentified"));
+    tile.append(matrixSvg(glyph.rows, `${glyph.label || "Unidentified"} binary stitch chart`, 5, comparisonGrid));
+    tile.append(make("p", "font-provenance-badge", "On the chart, not yet identified, so not in the TTF"));
+    const link = make("a", "font-matrix-download", "Download TXT motif");
+    link.href = `../fonts/${glyph.txtFile}`;
+    link.download = glyph.sourceFile || "unidentified.txt";
+    tile.append(link);
+    sheet.append(tile);
+  }
+}
+
 async function main() {
   setupPageNavigation();
   const id = root.dataset.fontId;
@@ -314,7 +328,10 @@ async function main() {
 
   renderGlyphs(sourceSheet, glyphs, sourceStatus, rowsByCharacter, additions, comparisonGrid);
   appendMissingGlyphs(sourceSheet, modernFont.missingCharacters || []);
-  sourceStatus.textContent = `${glyphs.length} available glyphs shown once; ${(modernFont.missingCharacters || []).length} missing characters use a teal rosette.`;
+  const unmapped = pageData.unmappedGlyphs || [];
+  appendUnmappedGlyphs(sourceSheet, unmapped, comparisonGrid);
+  sourceStatus.textContent = `${glyphs.length} available glyphs shown once; ${(modernFont.missingCharacters || []).length} missing characters use a teal rosette.`
+    + (unmapped.length ? ` ${unmapped.length} charted forms are not yet identified and are shown last.` : "");
   const pageWidth = Math.max(1, ...sourcePageRows.map((row) => row.length));
   addFrame(root.querySelector(".font-glyph-sheet-frame"), pageData.frameRows, frame.treatment, pageWidth);
 }
