@@ -111,11 +111,10 @@ format:
       - styles/hi-watermark.css
       - styles/analytics.css
     include-in-header:
-      # Google Analytics 4 Measurement ID for this site (GA4 property
-      # "Sjonabok-stafrof"). G-XXXXXXXXXX is a placeholder: while it is there
-      # analytics is off and no banner shows. See analytics.html.
+      # Google Tag Manager container shared by the HiDef Textiles sites. Nothing
+      # loads until the visitor accepts the banner. See analytics.html.
       - text: |
-          <meta name="ga-measurement-id" content="G-XXXXXXXXXX" data-privacy-href="/Sjonabok-stafrof/privacy.html">
+          <meta name="ga-measurement-id" content="GTM-5XPW89B4" data-privacy-href="/Sjonabok-stafrof/privacy.html">
       - file: analytics.html
       - text: |
           <link rel="preconnect" href="https://fonts.googleapis.com">
