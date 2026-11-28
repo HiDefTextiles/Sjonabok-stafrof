@@ -6,6 +6,7 @@ project:
     - font-families.qmd
     - font-test.qmd
     - font-similarity.qmd
+    - privacy.qmd
     - font-pages/natmus453_702.qmd
     - font-pages/natmus453_704.qmd
     - font-pages/natmus453_708.qmd
@@ -92,6 +93,10 @@ website:
     left: |
       Org preserves chart glyphs; Alt additions are marked in teal. The TXT grids are the reusable motif source; see the README for scope, attribution, and license details.
     right:
+      - text: "Privacy"
+        href: privacy.qmd
+      - text: "Cookie settings"
+        href: "#analytics-settings"
       - text: "Project README"
         href: https://github.com/HiDefTextiles/Sjonabok-stafrof#readme
 
@@ -104,7 +109,13 @@ format:
       - styles/gallery.scss
     css:
       - styles/hi-watermark.css
+      - styles/analytics.css
     include-in-header:
+      # Google Tag Manager container shared by the HiDef Textiles sites. Nothing
+      # loads until the visitor accepts the banner. See analytics.html.
+      - text: |
+          <meta name="ga-measurement-id" content="GTM-5XPW89B4" data-privacy-href="/Sjonabok-stafrof/privacy.html">
+      - file: analytics.html
       - text: |
           <link rel="preconnect" href="https://fonts.googleapis.com">
           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
