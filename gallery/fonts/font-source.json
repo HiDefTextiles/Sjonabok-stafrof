@@ -16002,6 +16002,279 @@
       ]
     },
     {
+      "id": "thjmsth_116_628",
+      "name": "Sjónabók Þjms. Th 116 628 Futhark",
+      "script": "runic",
+      "glyphs": [
+        {
+          "character": "ᛅ",
+          "id": "thjmsth_116_628_p2",
+          "sourceFile": "thjmsth_116_628_p2.txt",
+          "rows": [
+            "000010001",
+            "000010010",
+            "000010100",
+            "000111000",
+            "001010000",
+            "010010000",
+            "100010000"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p2.txt",
+          "reading": "a (ár)",
+          "confidence": "high"
+        },
+        {
+          "character": "ᚠ",
+          "id": "thjmsth_116_628_p5",
+          "sourceFile": "thjmsth_116_628_p5.txt",
+          "rows": [
+            "1100101",
+            "0101010",
+            "0110100",
+            "0101000",
+            "0110000",
+            "0100000",
+            "1110000"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p5.txt",
+          "reading": "f (fé)",
+          "confidence": "high"
+        },
+        {
+          "character": "ᚧ",
+          "id": "thjmsth_116_628_p6",
+          "sourceFile": "thjmsth_116_628_p6.txt",
+          "rows": [
+            "110000",
+            "011111",
+            "010001",
+            "010101",
+            "010001",
+            "011111",
+            "110000"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p6.txt",
+          "reading": "ð/d (dotted þurs)",
+          "confidence": "high"
+        },
+        {
+          "character": "ᚼ",
+          "id": "thjmsth_116_628_p7",
+          "sourceFile": "thjmsth_116_628_p7.txt",
+          "rows": [
+            "1001001",
+            "0101010",
+            "0011100",
+            "0001000",
+            "0011100",
+            "0101010",
+            "1001001"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p7.txt",
+          "reading": "h (hagall)",
+          "confidence": "high"
+        },
+        {
+          "character": "ᛁ",
+          "id": "thjmsth_116_628_p8",
+          "sourceFile": "thjmsth_116_628_p8.txt",
+          "rows": [
+            "111",
+            "010",
+            "010",
+            "010",
+            "010",
+            "010",
+            "111"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p8.txt",
+          "reading": "i (íss)",
+          "confidence": "high"
+        },
+        {
+          "character": "ᚢ",
+          "id": "thjmsth_116_628_p10",
+          "sourceFile": "thjmsth_116_628_p10.txt",
+          "rows": [
+            "1111",
+            "0101",
+            "0101",
+            "0100",
+            "0100",
+            "0100",
+            "1110"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p10.txt",
+          "reading": "u (úr)",
+          "confidence": "medium"
+        },
+        {
+          "character": "ᛘ",
+          "id": "thjmsth_116_628_p11",
+          "sourceFile": "thjmsth_116_628_p11.txt",
+          "rows": [
+            "1001001",
+            "0101010",
+            "0011100",
+            "0001000",
+            "0001000",
+            "0001000",
+            "0011100"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p11.txt",
+          "reading": "m (maðr)",
+          "confidence": "high"
+        },
+        {
+          "character": "ᛚ",
+          "id": "thjmsth_116_628_p12",
+          "sourceFile": "thjmsth_116_628_p12.txt",
+          "rows": [
+            "111110",
+            "011100",
+            "001000",
+            "001100",
+            "001010",
+            "001001",
+            "011001"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p12.txt",
+          "reading": "l (lögr)",
+          "confidence": "medium"
+        },
+        {
+          "character": "ᚮ",
+          "id": "thjmsth_116_628_p13",
+          "sourceFile": "thjmsth_116_628_p13.txt",
+          "rows": [
+            "0011",
+            "0110",
+            "1010",
+            "0010",
+            "0110",
+            "1010",
+            "0011"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p13.txt",
+          "reading": "o (óss)",
+          "confidence": "high"
+        },
+        {
+          "character": "ᚱ",
+          "id": "thjmsth_116_628_p14",
+          "sourceFile": "thjmsth_116_628_p14.txt",
+          "rows": [
+            "11100",
+            "01010",
+            "01100",
+            "01010",
+            "01100",
+            "01010",
+            "01001"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p14.txt",
+          "reading": "r (reið)",
+          "confidence": "medium"
+        },
+        {
+          "character": "ᛦ",
+          "id": "thjmsth_116_628_p15",
+          "sourceFile": "thjmsth_116_628_p15.txt",
+          "rows": [
+            "01111",
+            "01110",
+            "00100",
+            "00100",
+            "01010",
+            "10001",
+            "01110"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p15.txt",
+          "reading": "y/R (ýr)",
+          "confidence": "high"
+        },
+        {
+          "character": "ᛂ",
+          "id": "thjmsth_116_628_p16",
+          "sourceFile": "thjmsth_116_628_p16.txt",
+          "rows": [
+            "111",
+            "010",
+            "010",
+            "110",
+            "010",
+            "010",
+            "001"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p16.txt",
+          "reading": "e (dotted íss)",
+          "confidence": "medium"
+        }
+      ],
+      "unmappedGlyphs": [
+        {
+          "id": "thjmsth_116_628_p1",
+          "sourceFile": "thjmsth_116_628_p1.txt",
+          "rows": [
+            "111111",
+            "111111",
+            "000010",
+            "000110",
+            "001010",
+            "010010",
+            "100011"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p1.txt",
+          "label": "unidentified rune 1"
+        },
+        {
+          "id": "thjmsth_116_628_p3",
+          "sourceFile": "thjmsth_116_628_p3.txt",
+          "rows": [
+            "1000001",
+            "0100010",
+            "0010100",
+            "0001000",
+            "0010100",
+            "0100010",
+            "1000001"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p3.txt",
+          "label": "unidentified rune 2"
+        },
+        {
+          "id": "thjmsth_116_628_p4",
+          "sourceFile": "thjmsth_116_628_p4.txt",
+          "rows": [
+            "01110",
+            "00100",
+            "01110",
+            "10101",
+            "01110",
+            "00100",
+            "01110"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p4.txt",
+          "label": "unidentified rune 3"
+        },
+        {
+          "id": "thjmsth_116_628_p9",
+          "sourceFile": "thjmsth_116_628_p9.txt",
+          "rows": [
+            "1100000",
+            "0100000",
+            "0110000",
+            "0101000",
+            "0110100",
+            "0101010",
+            "0100101"
+          ],
+          "txtFile": "source-txt/thjmsth_116_628/thjmsth_116_628_p9.txt",
+          "label": "unidentified rune 4"
+        }
+      ]
+    },
+    {
       "id": "thjmsth_116_638",
       "name": "Sjónabók Þjms. Th 116 638",
       "glyphs": [

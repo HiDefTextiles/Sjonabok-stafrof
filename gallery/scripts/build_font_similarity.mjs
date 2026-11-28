@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const fontDir = path.resolve(scriptDir, "../fonts");
 const source = JSON.parse(fs.readFileSync(path.join(fontDir, "font-source.json"), "utf8"));
-const fonts = source.fonts.filter((font) => font.id !== "thjmsth_116_628");
+const fonts = source.fonts.filter((font) => font.script !== "runic");
 
 function group(id) { return id.replace(/_\d+$/u, ""); }
 function trim(rows) {

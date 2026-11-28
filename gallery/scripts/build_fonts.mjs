@@ -12,6 +12,12 @@ const fontDir = outputDir;
 const inputDir = path.join(localRoot, "alphabet", "txt");
 const fallbackName = "natmus453_760_p7.txt";
 
+// PostScript names must be printable ASCII without spaces, or browsers reject the CFF table.
+function postScriptName(name) {
+  return name.replaceAll("Þ", "Th").replaceAll("þ", "th").replaceAll("Ð", "D").replaceAll("ð", "d")
+    .replaceAll("Æ", "AE").replaceAll("æ", "ae").normalize("NFD").replace(/[^A-Za-z0-9-]/gu, "").slice(0, 63);
+}
+
 function readMatrix(filePath) {
   return fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/, "")
     .split(/\r?\n/).map((row) => row.trimEnd()).filter((row) => /^[01]+$/.test(row));
@@ -176,6 +182,7 @@ function makeFont(definition) {
   }
   const font = new opentype.Font({
     familyName: definition.name + " Org", styleName: "Regular", unitsPerEm,
+    postScriptName: postScriptName(definition.name + " Org") + "-Regular",
     ascender, descender, glyphs: fontGlyphs,
   });
   return {
@@ -253,7 +260,9 @@ function main() {
       id: definition.id, name: definition.name, filename, pageTxtFile, glyphCount: built.glyphCount,
       characters: built.characters, characterClasses: built.characterClasses,
       glyphs: definition.glyphs.map((glyph) => ({ character: glyph.character, txtFile: glyph.txtFile, sourceFile: glyph.sourceFile })),
+      script: definition.script || "latin",
       unmappedCount: definition.unmappedGlyphs?.length || 0,
+      unmappedGlyphs: (definition.unmappedGlyphs || []).map((glyph) => ({ label: glyph.label, txtFile: glyph.txtFile, sourceFile: glyph.sourceFile })),
       status: source.reviewStatus || "draft", note: source.note || "",
     });
   }

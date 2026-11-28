@@ -47,6 +47,7 @@ for (const font of index.fonts) {
         rows: readMatrix(path.join(fontDir, glyph.txtFile)),
       })),
     },
+    unmappedGlyphs: (font.unmappedGlyphs || []).map((glyph) => ({ ...glyph, rows: readMatrix(path.join(fontDir, glyph.txtFile)) })),
     comparisonGrid: modernIndex.comparisonGrid,
     frame,
     frameRows: readMatrix(path.join(galleryDir, frame.matrixFile)),

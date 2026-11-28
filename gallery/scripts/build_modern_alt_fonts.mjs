@@ -11,6 +11,12 @@ const modernUpper = [..."AÁBCDÐEÉFGHIÍJKLMNOÓPQRSTUÚVWXYÝZÞÆÖ"];
 const modernLetters = modernUpper.flatMap((character) => [character, character.toLowerCase()]);
 const modernDigits = [..."0123456789"];
 
+// PostScript names must be printable ASCII without spaces, or browsers reject the CFF table.
+function postScriptName(name) {
+  return name.replaceAll("Þ", "Th").replaceAll("þ", "th").replaceAll("Ð", "D").replaceAll("ð", "d")
+    .replaceAll("Æ", "AE").replaceAll("æ", "ae").normalize("NFD").replace(/[^A-Za-z0-9-]/gu, "").slice(0, 63);
+}
+
 function rowsToRuns(rows) {
   const active = new Map(), rectangles = [];
   for (let y = 0; y <= rows.length; y++) {
@@ -147,6 +153,7 @@ function buildFont(definition, resolved) {
   }
   return new opentype.Font({
     familyName: definition.name + " Alt", styleName: "Regular", unitsPerEm,
+    postScriptName: postScriptName(definition.name + " Alt") + "-Regular",
     ascender, descender, glyphs: fontGlyphs,
   });
 }
@@ -190,20 +197,22 @@ function main() {
       }
     }
   }
-  const latinFonts = source.fonts.filter((font) => font.id !== "thjmsth_116_628");
+  // A runic sheet (Futhark) has no Latin target set: its Alt font is its own runes, with no donors.
+  const isRunic = (font) => font.script === "runic";
+  const latinFonts = source.fonts.filter((font) => !isRunic(font));
   fs.mkdirSync(outputDir, { recursive: true });
   const index = [];
   let verifiedGlyphCount = 0;
   const expectedTxtFiles = new Set();
-  for (const definition of latinFonts) {
+  for (const definition of source.fonts) {
     const classes = characterClasses(definition.glyphs);
-    const targetCharacters = [
+    const targetCharacters = isRunic(definition) ? definition.glyphs.map((glyph) => glyph.character) : [
       ...(classes.includes("letters") ? modernLetters : []),
       ...(classes.includes("numbers") ? modernDigits : []),
     ];
     const resolved = new Map(), provenance = [], missingCharacters = [];
     for (const character of targetCharacters) {
-      const record = resolveCharacter(definition, character, latinFonts);
+      const record = resolveCharacter(definition, character, isRunic(definition) ? [] : latinFonts);
       if (!record) {
         missingCharacters.push(character);
         continue;
@@ -231,7 +240,7 @@ function main() {
       sourceCharacters: [...new Set(definition.glyphs.map((glyph) => glyph.character))].sort((a, b) => a.localeCompare(b, "is")),
       characterClasses: classes, targetCharacters, characters: [...resolved.keys()], missingCharacters,
       glyphs, additions: provenance,
-      note: "The set preserves the letter/number classes present on the source chart. It uses chart glyphs and same-chart case forms first. An added character may use the same labeled glyph from another chart in the same manuscript group only when the source charts' median glyph heights differ by no more than one stitch row. No glyphs are drawn or borrowed across manuscripts. Unsupported characters remain missing.",
+      note: isRunic(definition) ? "Runic sheet: the Alt font holds the same runes as the Org font. No glyphs are borrowed from other charts, and runes not yet identified are left out of both fonts." : "The set preserves the letter/number classes present on the source chart. It uses chart glyphs and same-chart case forms first. An added character may use the same labeled glyph from another chart in the same manuscript group only when the source charts' median glyph heights differ by no more than one stitch row. No glyphs are drawn or borrowed across manuscripts. Unsupported characters remain missing.",
     });
   }
   for (const entry of fs.readdirSync(path.join(fontDir, "modern-alt-txt"), { withFileTypes: true })) {

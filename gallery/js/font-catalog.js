@@ -37,7 +37,8 @@ async function main() {
     detail.textContent = "Open chart page";
     const group = document.createElement("p");
     const classes = font.characterClasses || [];
-    const classLabel = classes.length === 2 ? "letters and numbers" : classes[0] === "numbers" ? "numbers only" : "letters only";
+    const classLabel = font.script === "runic" ? "runes (Futhark)"
+      : classes.length === 2 ? "letters and numbers" : classes[0] === "numbers" ? "numbers only" : "letters only";
     group.textContent = `Source ID group: ${groupOf(font.id)} · ${font.glyphCount} charted glyphs · ${classLabel}`;
     const glyphs = (font.glyphs || []).slice(0, 3).map((glyph) => glyph.character).filter(Boolean);
     const sample = document.createElement("p");

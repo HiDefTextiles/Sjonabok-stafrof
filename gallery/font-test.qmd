@@ -31,7 +31,7 @@ include-after-body:
 ```
 
 ::: {.font-source-note}
-These are experimental fonts made from the book’s chart patterns. The chart labels are transcriptions and may need correction. The Futhark page is kept separate from the Latin-letter fonts; some of its runes are not yet identified.
+These are experimental fonts made from the book’s chart patterns. The chart labels are transcriptions and may need correction. The Futhark page (Þjms. Th 116, page 628) is a runic font: its runes use the Unicode Runic block, and four of its 16 runes are not yet identified, so they are shown on its chart page but left out of the font.
 :::
 
 ## How the downloadable fonts are made {#how-the-fonts-are-made}
