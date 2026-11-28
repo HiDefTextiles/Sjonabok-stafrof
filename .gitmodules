@@ -1,0 +1,4 @@
+[submodule "sjonabok"]
+	path = sjonabok
+	url = https://github.com/HiDefTextiles/Sjonabok.git
+	branch = main

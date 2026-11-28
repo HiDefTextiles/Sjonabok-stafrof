@@ -60,6 +60,7 @@ project:
     - styles/jost/**
     - fonts/**
     - patterns/**
+    - motifs/**
     - js/**
     - img/**
     - consent/**

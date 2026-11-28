@@ -9,6 +9,8 @@ include-after-body:
 
 Browse the digitized chart pages and their glyphs. Open a font page to see its Org and Alt versions and download those files. The [font test page](font-test.qmd) explains how the fonts are made and lets you try your own text.
 
+[Browse and download TXT motifs](motifs/index.html)
+
 ::: {.font-navigation}
 [Explore source groups and border motifs](font-families.qmd) · [Compare glyph similarity and chart coverage](font-similarity.qmd) · [Try the fonts with your own text](font-test.qmd)
 :::
